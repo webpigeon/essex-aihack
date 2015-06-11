@@ -88,7 +88,6 @@ public class SimpleBattle {
         Action a2 = p2.getAction(this, 1);
 
         // now apply them to the ships
-
         s1.update(a1);
         s2.update(a2);
 
@@ -129,7 +128,7 @@ public class SimpleBattle {
     protected ArrayList<GameObject> copyObjects() {
         ArrayList<GameObject> objectClone = new ArrayList<GameObject>();
         for (GameObject object : objects) {
-            objectClone.add(object);
+            objectClone.add(object.copy());
         }
 
         return objectClone;

@@ -17,6 +17,17 @@ public abstract class GameObject {
 
     public abstract void update();
     public abstract void draw(Graphics2D g);
+    public abstract GameObject copy();
+
+    protected GameObject updateClone(GameObject copyObject) {
+        copyObject.s = s.copy();
+        copyObject.v = v.copy();
+        copyObject.isTarget = isTarget;
+        copyObject.dead = dead;
+        copyObject.r = r;
+
+        return copyObject;
+    }
 
     public abstract boolean dead();
 
