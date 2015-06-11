@@ -10,6 +10,6 @@ import battle.SimpleBattle;
 public class EmptyController implements BattleController {
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
-        return null;
+        return new Action(0,0,false);
     }
 }
