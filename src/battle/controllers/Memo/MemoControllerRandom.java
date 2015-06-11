@@ -1,4 +1,4 @@
-package battle.controllers;
+package battle.controllers.Memo;
 
 import asteroids.Action;
 import asteroids.Controller;
@@ -8,27 +8,12 @@ import battle.BattleController;
 import battle.NeuroShip;
 import battle.SimpleBattle;
 import math.Vector2d;
+import battle.controllers.Memo.MemoControllerUtils;
 
 /**
  * Created by Memo Akten on 11/06/15.
  */
 public class MemoControllerRandom implements BattleController {
-
-    static double lookAt(Vector2d s, Vector2d d, Vector2d lookat, double threshold) {
-        Vector2d desired_rot_vec = lookat.copy();
-        desired_rot_vec.add(s, -1);
-
-        double current_rot = Math.atan2(d.y, d.x);
-        double target_rot = Math.atan2(desired_rot_vec.y, desired_rot_vec.x);
-        if(Math.abs(current_rot - target_rot) < threshold) {
-            return 0;
-        } else {
-            if(current_rot > target_rot) return -1;
-            else return 1;
-        }
-    }
-
-
     public double ATTACK_PROB = 0.1;
     public double ATTACK_SHOOT_PROB = 1;
     public double ATTACK_THRUST_PROB = 0.01;
@@ -53,7 +38,7 @@ public class MemoControllerRandom implements BattleController {
         if(Math.random() < ATTACK_PROB) {
             action.thrust = Math.random() < ATTACK_THRUST_PROB ? 1 : 0;
             action.shoot = Math.random() < ATTACK_SHOOT_PROB;
-            action.turn = lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
+            action.turn = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
         } else{
             action.thrust = Math.random() < FLEE_THRUST_PROB ? 1 : 0;
             action.shoot = Math.random() < FLEE_SHOOT_PROB;
