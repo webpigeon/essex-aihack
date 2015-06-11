@@ -17,7 +17,7 @@ public class BattleTest {
 
     public static void main(String[] args) {
 
-        NeuroShip s1 = buildShip(150,150);
+        NeuroShip s1 = buildShip(250,250);
         NeuroShip s2 = buildShip(300,300);
 
         SimpleBattle battle = new SimpleBattle(s1, s2);

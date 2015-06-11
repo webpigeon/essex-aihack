@@ -3,6 +3,7 @@ package battle;
 import asteroids.Action;
 import asteroids.GameObject;
 import asteroids.Missile;
+import asteroids.Ship;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
@@ -83,6 +84,9 @@ public class SimpleBattle {
         s1.update(a1);
         s2.update(a2);
 
+        checkCollision(s1);
+        checkCollision(s2);
+
         // and fire any missiles as necessary
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
         if (a2.shoot) fireMissile(s2.s, s2.d, 1);
@@ -102,6 +106,39 @@ public class SimpleBattle {
             view.repaint();
             sleep();
         }
+    }
+
+    public void checkCollision(GameObject actor) {
+        // check with all other game objects
+        // but use a hack to only consider interesting interactions
+        // e.g. asteroids do not collide with themselves
+        if (!actor.dead() &&
+                (actor instanceof BattleMissile
+                        || actor instanceof NeuroShip)) {
+            if (actor instanceof BattleMissile) {
+                // System.out.println("Missile: " + actor);
+            }
+            for (GameObject ob : objects) {
+                if (overlap(actor, ob)) {
+                    // the object is hit, and the actor is also
+
+                    int playerID = (actor == s1 ? 1 : 0);
+                    PlayerStats stats = this.stats.get(playerID);
+                    stats.nPoints += 10;
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean overlap(GameObject actor, GameObject ob) {
+        if (actor.equals(ob)) {
+            return false;
+        }
+        // otherwise do the default check
+        double dist = actor.s.dist(ob.s);
+        boolean ret = dist < (actor.r() + ob.r());
+        return ret;
     }
 
     public void sleep() {

@@ -65,7 +65,7 @@ public class BattleView extends JComponent {
         //         + " : " + game.list.isSafe(game.ship) + " : " + game.nLives;
         // FontMetrics fm = font.
 
-        String str = "Battle state goes here";
+        String str = game.stats.get(0) + " " + game.stats.get(1);
         g.drawString(str, 10, 20);
     }
 
