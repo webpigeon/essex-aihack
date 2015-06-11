@@ -68,17 +68,17 @@ public class SimpleBattle {
     protected void reset() {
         stats.clear();
         objects.clear();
-        s1 = buildShip(250, 250);
-        s2 = buildShip(300, 300);
+        s1 = buildShip(250, 250, 0);
+        s2 = buildShip(300, 300, 1);
         this.currentTick = 0;
     }
 
-    protected NeuroShip buildShip(int x, int y) {
+    protected NeuroShip buildShip(int x, int y, int playerID) {
         Vector2d position = new Vector2d(x, y);
         Vector2d speed = new Vector2d();
         Vector2d direction = new Vector2d(1, 0);
 
-        return new NeuroShip(position, speed, direction );
+        return new NeuroShip(position, speed, direction, playerID );
     }
 
     public void update() {
