@@ -27,7 +27,8 @@ public class SimpleBattle {
     static int nTicks = 1000;
     static int pointsPerKill = 10;
     static int releaseVelocity = 5;
-    static boolean visible = true;
+
+    boolean visible = true;
 
     ArrayList<BattleController> controllers;
 
@@ -67,17 +68,17 @@ public class SimpleBattle {
     protected void reset() {
         stats.clear();
         objects.clear();
-        s1 = buildShip(250, 250);
-        s2 = buildShip(300, 300);
+        s1 = buildShip(250, 250, 0);
+        s2 = buildShip(300, 300, 1);
         this.currentTick = 0;
     }
 
-    protected NeuroShip buildShip(int x, int y) {
+    protected NeuroShip buildShip(int x, int y, int playerID) {
         Vector2d position = new Vector2d(x, y);
         Vector2d speed = new Vector2d();
         Vector2d direction = new Vector2d(1, 0);
 
-        return new NeuroShip(position, speed, direction );
+        return new NeuroShip(position, speed, direction, playerID );
     }
 
     public void update() {
@@ -129,6 +130,7 @@ public class SimpleBattle {
         state.objects = copyObjects();
         state.stats = copyStats();
         state.currentTick = currentTick;
+        state.visible = false; //stop MCTS people having all the games :p
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
