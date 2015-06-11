@@ -41,11 +41,9 @@ public class SimpleBattle {
     BattleController p1, p2;
     BattleView view;
 
-    public SimpleBattle(NeuroShip s1, NeuroShip s2) {
+    public SimpleBattle() {
         this.objects = new ArrayList<>();
         this.stats = new ArrayList<>();
-        this.s1 = s1;
-        this.s2 = s2;
 
         if (visible) {
             view = new BattleView(this);
