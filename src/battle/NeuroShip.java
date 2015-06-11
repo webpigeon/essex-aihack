@@ -70,6 +70,18 @@ public class NeuroShip extends GameObject {
         // System.out.println("Reset the ship ");
     }
 
+    private static double clamp(double v, double min, double max) {
+        if (v > max) {
+            return max;
+        }
+
+        if (v < min) {
+            return min;
+        }
+
+        return v;
+    }
+
     public NeuroShip update(Action action) {
 
         // what if this is always on?
@@ -84,20 +96,17 @@ public class NeuroShip extends GameObject {
             thrusting = false;
         }
 
+        //prevent people from cheating
+        double thrustSpeed = clamp(action.thrust, 0, 1);
+        double turnAngle = clamp(action.turn, -1, 1);
 
-        d.rotate(action.turn * steerStep);
-        v.add(d, action.thrust * t * 0.3 / 2);
+        d.rotate(turnAngle * steerStep);
+        v.add(d, thrustSpeed * t * 0.3 / 2);
         v.y += gravity;
         // v.x = 0.5;
         v.mul(loss);
         s.add(v);
-        // now create a missile if necessary
-        // if the release velocity is zero
-        releaseVelocity += 1.0;
-        if (action.shoot) {
-            tryMissileLaunch();
-        } else {
-        }
+
         return this;
     }
 
