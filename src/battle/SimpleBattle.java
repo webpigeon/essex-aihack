@@ -2,24 +2,21 @@ package battle;
 
 import asteroids.Action;
 import asteroids.GameObject;
+import asteroids.Missile;
 import math.Vector2d;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-import static asteroids.Constants.bg;
-import static asteroids.Constants.size;
+import static asteroids.Constants.*;
 
 /**
  * Created by simon lucas on 10/06/15.
- *
- *  Aim here is to have a simple battle class
- *  that enables ships to fish with each other
- *
- *  Might start off with just two ships, each with their own types of missile.
- *
- *
- *
+ * <p>
+ * Aim here is to have a simple battle class
+ * that enables ships to fish with each other
+ * <p>
+ * Might start off with just two ships, each with their own types of missile.
  */
 
 public class SimpleBattle {
@@ -29,6 +26,7 @@ public class SimpleBattle {
     static int nMissiles = 100;
     static int nTicks = 1000;
     static int pointsPerKill = 10;
+    static int releaseVelocity = 5;
 
     ArrayList<BattleController> controllers;
 
@@ -47,7 +45,14 @@ public class SimpleBattle {
     }
 
     public int playGame(BattleController p1, BattleController p2) {
-       return 0;
+
+        int currentTicks = 0;
+
+        while (currentTicks++ < nTicks) {
+            update();
+        }
+
+        return 0;
     }
 
     public void update() {
@@ -74,7 +79,18 @@ public class SimpleBattle {
 
     public void fireMissile(Vector2d s, Vector2d d, int playerId) {
         // need all the usual missile firing code here
-
+        NeuroShip currentShip = playerId == 0 ? s1 : s2;
+        PlayerStats stats = this.stats.get(playerId);
+        if (stats.nMissiles < nMissiles) {
+            Missile m = new Missile(s, new Vector2d(0, 0));
+            m.v.add(d, releaseVelocity);
+            // make it clear the ship
+            m.s.add(m.v, (currentShip.r() + missileRadius) * 1.5 / m.v.mag());
+            objects.add(m);
+            // System.out.println("Fired: " + m);
+            // sounds.fire();
+            stats.nMissiles++;
+        }
     }
 
     public void draw(Graphics2D g) {
@@ -85,10 +101,13 @@ public class SimpleBattle {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(bg);
         g.fillRect(0, 0, size.width, size.height);
+
         for (GameObject go : objects) {
             go.draw(g);
         }
-        s1.draw(g); s2.draw(g);
+
+        s1.draw(g);
+        s2.draw(g);
     }
 
     static class PlayerStats {

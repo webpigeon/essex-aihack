@@ -38,20 +38,18 @@ public class NeuroShip extends GameObject {
     static double gravity = 0.0;
 
     public Action action;
-    public GameState game;
 
     // position and velocity
     public Vector2d d;
 
 
-    public NeuroShip(GameState game, Vector2d s, Vector2d v, Vector2d d) {
+    public NeuroShip(Vector2d s, Vector2d v, Vector2d d) {
         super(new Vector2d(s), new Vector2d(v));
-        this.game = game;
         this.d = new Vector2d(d);
     }
 
     public NeuroShip copy() {
-        NeuroShip ship = new NeuroShip(game, s, v, d);
+        NeuroShip ship = new NeuroShip(s, v, d);
         ship.action = new Action(action);
         ship.releaseVelocity = releaseVelocity;
         return ship;
@@ -120,7 +118,6 @@ public class NeuroShip extends GameObject {
             // make it clear the ship
             m.s.add(m.v, (r() + missileRadius) * 1.5 / m.v.mag());
             releaseVelocity = 0;
-            game.add(m);
             // System.out.println("Fired: " + m);
             // sounds.fire();
         } else {
@@ -151,7 +148,6 @@ public class NeuroShip extends GameObject {
         // super.hit();
         // System.out.println("Ship destroyed");
         dead = true;
-        game.shipDeath();
         // sounds.play(sounds.bangLarge);
     }
 
