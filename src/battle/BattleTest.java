@@ -19,8 +19,9 @@ public class BattleTest {
 
         SimpleBattle battle = new SimpleBattle();
 
-        BattleController fire = new RotateAndShoot();
-        battle.playGame(fire, fire);
+        BattleController player1 = new RotateAndShoot();
+        BattleController player2 = new RotateAndShoot();
+        battle.playGame(player1, player2);
     }
 
 }

@@ -1,9 +1,6 @@
 package battle;
 
-import asteroids.Action;
-import asteroids.GameObject;
-import asteroids.Missile;
-import asteroids.Ship;
+import asteroids.*;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
@@ -117,6 +114,34 @@ public class SimpleBattle {
             view.repaint();
             sleep();
         }
+    }
+
+    public SimpleBattle clone() {
+        SimpleBattle state = new SimpleBattle();
+        state.objects = copyObjects();
+        state.stats = copyStats();
+
+        state.s1 = s1.copy();
+        state.s2 = s2.copy();
+        return state;
+    }
+
+    protected ArrayList<GameObject> copyObjects() {
+        ArrayList<GameObject> objectClone = new ArrayList<GameObject>();
+        for (GameObject object : objects) {
+            objectClone.add(object);
+        }
+
+        return objectClone;
+    }
+
+    protected ArrayList<PlayerStats> copyStats() {
+        ArrayList<PlayerStats> statsClone = new ArrayList<PlayerStats>();
+        for (PlayerStats object : stats) {
+            statsClone.add(new PlayerStats(object.nMissiles, object.nPoints));
+        }
+
+        return statsClone;
     }
 
     public void checkCollision(GameObject actor) {
