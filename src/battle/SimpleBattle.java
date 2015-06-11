@@ -27,7 +27,8 @@ public class SimpleBattle {
     static int nTicks = 1000;
     static int pointsPerKill = 10;
     static int releaseVelocity = 5;
-    static boolean visible = true;
+
+    boolean visible = true;
 
     ArrayList<BattleController> controllers;
 
@@ -129,6 +130,7 @@ public class SimpleBattle {
         state.objects = copyObjects();
         state.stats = copyStats();
         state.currentTick = currentTick;
+        state.visible = false; //stop MCTS people having all the games :p
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
