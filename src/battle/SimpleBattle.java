@@ -208,6 +208,9 @@ public class SimpleBattle {
 
     public void draw(Graphics2D g) {
         // for (Object ob : objects)
+        if (s1 == null || s2 == null) {
+            return;
+        }
 
         // System.out.println("In draw(): " + n);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

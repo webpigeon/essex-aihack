@@ -34,6 +34,10 @@ public class BattleView extends JComponent {
     }
 
     public void paintComponent(Graphics gx) {
+        if (game.s1 == null || game.s2 == null) {
+            return;
+        }
+
         Graphics2D g = (Graphics2D) gx;
         AffineTransform at = g.getTransform();
         g.translate((1 - viewScale) * width / 2, (1-viewScale)*height / 2);
@@ -65,7 +69,7 @@ public class BattleView extends JComponent {
         //         + " : " + game.list.isSafe(game.ship) + " : " + game.nLives;
         // FontMetrics fm = font.
 
-        String str = game.stats.get(0) + " " + game.stats.get(1);
+        String str = game.stats.get(0) + " " + game.stats.get(1) + " " + game.currentTick;
         g.drawString(str, 10, 20);
     }
 
