@@ -41,6 +41,10 @@ public class SimpleBattle {
     int currentTick;
 
     public SimpleBattle() {
+        this(true);
+    }
+
+    public SimpleBattle(boolean visible) {
         this.objects = new ArrayList<>();
         this.stats = new ArrayList<>();
 
@@ -126,7 +130,7 @@ public class SimpleBattle {
 
 
     public SimpleBattle clone() {
-        SimpleBattle state = new SimpleBattle();
+        SimpleBattle state = new SimpleBattle(false);
         state.objects = copyObjects();
         state.stats = copyStats();
         state.currentTick = currentTick;
