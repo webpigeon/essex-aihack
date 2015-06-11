@@ -221,12 +221,26 @@ public class SimpleBattle {
         s2.draw(g);
     }
 
+    public NeuroShip getShip(int playerID) {
+        assert playerID < 2;
+        assert playerID >= 0;
+
+        if (playerID == 0) {
+            return s1.copy();
+        } else {
+            return s2.copy();
+        }
+    }
+
     public ArrayList<GameObject> getObjects()
     {
-        return objects;
+        return new ArrayList<>(objects);
     }
 
     public PlayerStats getStats(int playerID) {
+        assert playerID < 2;
+        assert playerID >= 0;
+
         return stats.get(playerID);
     }
 
