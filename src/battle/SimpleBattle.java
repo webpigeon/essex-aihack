@@ -101,10 +101,14 @@ public class SimpleBattle {
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
         if (a2.shoot) fireMissile(s2.s, s2.d, 1);
 
+        wrap(s1);
+        wrap(s2);
+
         // here need to add the game objects ...
         java.util.List<GameObject> killList = new ArrayList<GameObject>();
         for (GameObject object : objects) {
             object.update();
+            wrap(object);
             if (object.dead()) {
                 killList.add(object);
             }
@@ -256,6 +260,13 @@ public class SimpleBattle {
         return stats.get(playerID).nMissiles - nMissiles;
     }
 
+    private void wrap(GameObject ob) {
+        // only wrap objects which are wrappable
+        if (ob.wrappable()) {
+            ob.s.x = (ob.s.x + width) % width;
+            ob.s.y = (ob.s.y + height) % height;
+        }
+    }
 
     public boolean isGameOver() {
         if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
