@@ -4,6 +4,7 @@ import asteroids.Action;
 import asteroids.GameObject;
 import asteroids.Missile;
 import math.Vector2d;
+import utilities.JEasyFrame;
 
 import java.util.ArrayList;
 import java.awt.*;
@@ -38,12 +39,18 @@ public class SimpleBattle {
     BattleController b1, b2;
     NeuroShip s1, s2;
     BattleController p1, p2;
+    BattleView view;
 
     public SimpleBattle(NeuroShip s1, NeuroShip s2) {
         this.objects = new ArrayList<>();
         this.stats = new ArrayList<>();
         this.s1 = s1;
         this.s2 = s2;
+
+        if (visible) {
+            view = new BattleView(this);
+            new JEasyFrame(view, "battle");
+        }
     }
 
     public int playGame(BattleController p1, BattleController p2) {
@@ -92,6 +99,7 @@ public class SimpleBattle {
         objects.removeAll(killList);
 
         if (visible) {
+            view.repaint();
             sleep();
         }
     }
@@ -113,8 +121,6 @@ public class SimpleBattle {
             m.v.add(d, releaseVelocity);
             // make it clear the ship
             m.s.add(m.v, (currentShip.r() + missileRadius) * 1.5 / m.v.mag());
-
-            System.out.println(d);
             objects.add(m);
             // System.out.println("Fired: " + m);
             // sounds.fire();

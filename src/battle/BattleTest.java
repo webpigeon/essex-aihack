@@ -2,16 +2,18 @@ package battle;
 
 import javax.swing.*;
 
-import asteroids.*;
 import asteroids.Action;
 import battle.controllers.EmptyController;
 import battle.controllers.FireController;
+import battle.controllers.RotateAndShoot;
 import math.Vector2d;
+import utilities.JEasyFrame;
 
 /**
  * Created by simon lucas on 10/06/15.
  */
 public class BattleTest {
+    BattleView view;
 
     public static void main(String[] args) {
 
@@ -19,16 +21,8 @@ public class BattleTest {
         NeuroShip s2 = buildShip(300,300);
 
         SimpleBattle battle = new SimpleBattle(s1, s2);
-        BattleView view = new BattleView(battle);
 
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(view);
-        frame.pack();
-        frame.setVisible(true);
-
-
-        BattleController fire = new FireController();
+        BattleController fire = new RotateAndShoot();
         battle.playGame(fire, fire);
     }
 
