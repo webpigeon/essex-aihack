@@ -37,8 +37,6 @@ public class NeuroShip extends GameObject {
 
     static double gravity = 0.0;
 
-    public Action action;
-
     // position and velocity
     public Vector2d d;
 
@@ -50,7 +48,6 @@ public class NeuroShip extends GameObject {
 
     public NeuroShip copy() {
         NeuroShip ship = new NeuroShip(s, v, d);
-        ship.action = new Action(action);
         ship.releaseVelocity = releaseVelocity;
         return ship;
     }
@@ -71,10 +68,6 @@ public class NeuroShip extends GameObject {
         d.set(0, -1);
         dead = false;
         // System.out.println("Reset the ship ");
-    }
-
-    public void update() {
-        update(action);
     }
 
     public NeuroShip update(Action action) {
@@ -127,6 +120,11 @@ public class NeuroShip extends GameObject {
 
     public String toString() {
         return s + "\t " + v;
+    }
+
+    @Override
+    public void update() {
+        throw new IllegalArgumentException("You shouldn't be calling this...");
     }
 
     public void draw(Graphics2D g) {
