@@ -37,6 +37,7 @@ public class SimpleBattle {
     NeuroShip s1, s2;
     BattleController p1, p2;
     BattleView view;
+    int currentTick;
 
     public SimpleBattle() {
         this.objects = new ArrayList<>();
@@ -56,9 +57,7 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
-        int currentTicks = 0;
-
-        while (currentTicks++ < nTicks) {
+        while (currentTick < nTicks) {
             update();
         }
 
@@ -70,6 +69,7 @@ public class SimpleBattle {
         objects.clear();
         s1 = buildShip(250, 250);
         s2 = buildShip(300, 300);
+        this.currentTick = 0;
     }
 
     protected NeuroShip buildShip(int x, int y) {
@@ -111,6 +111,7 @@ public class SimpleBattle {
         }
 
         objects.removeAll(killList);
+        currentTick++;
 
         if (visible) {
             view.repaint();
@@ -123,6 +124,7 @@ public class SimpleBattle {
         SimpleBattle state = new SimpleBattle();
         state.objects = copyObjects();
         state.stats = copyStats();
+        state.currentTick = currentTick;
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
@@ -237,11 +239,23 @@ public class SimpleBattle {
         return new ArrayList<>(objects);
     }
 
-    public PlayerStats getStats(int playerID) {
+    public int getPoints(int playerID) {
         assert playerID < 2;
         assert playerID >= 0;
 
-        return stats.get(playerID);
+        return stats.get(playerID).nPoints;
+    }
+
+    public int getMissilesLeft(int playerID) {
+        assert playerID < 2;
+        assert playerID >= 0;
+
+        return stats.get(playerID).nMissiles - nMissiles;
+    }
+
+
+    public boolean isGameOver() {
+        return currentTick >= nTicks;
     }
 
     static class PlayerStats {
