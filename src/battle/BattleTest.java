@@ -4,6 +4,8 @@ import javax.swing.*;
 
 import asteroids.*;
 import asteroids.Action;
+import battle.controllers.EmptyController;
+import battle.controllers.FireController;
 import math.Vector2d;
 
 /**
@@ -13,8 +15,8 @@ public class BattleTest {
 
     public static void main(String[] args) {
 
-        NeuroShip s1 = buildShip(15,15);
-        NeuroShip s2 = buildShip(30,30);
+        NeuroShip s1 = buildShip(150,150);
+        NeuroShip s2 = buildShip(300,300);
 
         SimpleBattle battle = new SimpleBattle(s1, s2);
         BattleView view = new BattleView(battle);
@@ -26,14 +28,14 @@ public class BattleTest {
         frame.setVisible(true);
 
 
-        BattleController noop = new EmptyController();
-        battle.playGame(noop, noop);
+        BattleController fire = new FireController();
+        battle.playGame(fire, fire);
     }
 
     public static NeuroShip buildShip(int x, int y) {
         Vector2d position = new Vector2d(x, y);
         Vector2d speed = new Vector2d();
-        Vector2d direction = new Vector2d();
+        Vector2d direction = new Vector2d(1, 0);
 
         NeuroShip ship = new NeuroShip(position, speed, direction );
         return ship;

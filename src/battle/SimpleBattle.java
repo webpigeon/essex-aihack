@@ -5,8 +5,9 @@ import asteroids.GameObject;
 import asteroids.Missile;
 import math.Vector2d;
 
-import java.awt.*;
 import java.util.ArrayList;
+import java.awt.*;
+
 
 import static asteroids.Constants.*;
 
@@ -27,6 +28,7 @@ public class SimpleBattle {
     static int nTicks = 1000;
     static int pointsPerKill = 10;
     static int releaseVelocity = 5;
+    static boolean visible = true;
 
     ArrayList<BattleController> controllers;
 
@@ -45,6 +47,11 @@ public class SimpleBattle {
     }
 
     public int playGame(BattleController p1, BattleController p2) {
+        this.p1 = p1;
+        this.p2 = p2;
+
+        stats.add(new PlayerStats(0, 0));
+        stats.add(new PlayerStats(0, 0));
 
         int currentTicks = 0;
 
@@ -74,7 +81,27 @@ public class SimpleBattle {
         if (a2.shoot) fireMissile(s2.s, s2.d, 1);
 
         // here need to add the game objects ...
+        java.util.List<GameObject> killList = new ArrayList<GameObject>();
+        for (GameObject object : objects) {
+            object.update();
+            if (object.dead()) {
+                killList.add(object);
+            }
+        }
 
+        objects.removeAll(killList);
+
+        if (visible) {
+            sleep();
+        }
+    }
+
+    public void sleep() {
+        try {
+            Thread.sleep(delay);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void fireMissile(Vector2d s, Vector2d d, int playerId) {
@@ -86,6 +113,8 @@ public class SimpleBattle {
             m.v.add(d, releaseVelocity);
             // make it clear the ship
             m.s.add(m.v, (currentShip.r() + missileRadius) * 1.5 / m.v.mag());
+
+            System.out.println(d);
             objects.add(m);
             // System.out.println("Fired: " + m);
             // sounds.fire();
