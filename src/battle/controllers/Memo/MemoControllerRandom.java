@@ -17,7 +17,7 @@ public class MemoControllerRandom implements BattleController {
     public double ATTACK_PROB = 0.1;
     public double ATTACK_SHOOT_PROB = 1;
     public double ATTACK_THRUST_PROB = 0.01;
-    public double ATTACK_ROT_THRESH = 0.1;
+    public double ATTACK_ROT_THRESH = 0.01;
     public double FLEE_ROT_CHANGE_PROB = 0.3;
     public double FLEE_SHOOT_PROB = 0.1;
     public double FLEE_THRUST_PROB = 0.8;
@@ -38,6 +38,8 @@ public class MemoControllerRandom implements BattleController {
         if(Math.random() < ATTACK_PROB) {
             action.thrust = Math.random() < ATTACK_THRUST_PROB ? 1 : 0;
             action.shoot = Math.random() < ATTACK_SHOOT_PROB;
+
+            // TODO, include velocity vector in target pos
             action.turn = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
         } else{
             action.thrust = Math.random() < FLEE_THRUST_PROB ? 1 : 0;
