@@ -86,7 +86,10 @@ public class SimpleBattle {
         // apply them to each player's ship, taking actions as necessary
         Action a1 = p1.getAction(this, 0);
         Action a2 = p2.getAction(this, 1);
+        update(a1, a2);
+    }
 
+    public void update(Action a1, Action a2) {
         // now apply them to the ships
 
         s1.update(a1);
