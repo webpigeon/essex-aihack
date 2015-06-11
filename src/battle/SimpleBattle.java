@@ -253,6 +253,14 @@ public class SimpleBattle {
             this.nPoints = nPoints;
         }
 
+        public int getMissilesFired() {
+            return nMissiles;
+        }
+
+        public int getPoints() {
+            return nPoints;
+        }
+
         public String toString() {
             return nMissiles + " : " + nPoints;
         }
