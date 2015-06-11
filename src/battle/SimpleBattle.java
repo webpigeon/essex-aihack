@@ -57,7 +57,7 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
-        while (currentTick < nTicks) {
+        while (!isGameOver()) {
             update();
         }
 
@@ -258,6 +258,13 @@ public class SimpleBattle {
 
 
     public boolean isGameOver() {
+        if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
+            //ensure that there are no bullets left in play
+            if (objects.isEmpty()) {
+                return true;
+            }
+        }
+
         return currentTick >= nTicks;
     }
 
