@@ -182,6 +182,11 @@ public class SimpleBattle {
         s2.draw(g);
     }
 
+    public ArrayList<GameObject> getObjects()
+    {
+        return objects;
+    }
+
     static class PlayerStats {
         int nMissiles;
         int nPoints;
