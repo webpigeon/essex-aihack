@@ -117,8 +117,6 @@ public class NeuroShip extends GameObject {
 
         s.add(v);
 
-        System.out.println(v);
-
         return this;
     }
 
