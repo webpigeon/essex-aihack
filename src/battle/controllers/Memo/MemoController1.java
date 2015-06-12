@@ -32,7 +32,7 @@ public class MemoController1 implements RenderableBattleController {
     public double CHASE_THRUST_PROB = 0.5;
     public double CHASE_DOT_THRESH = 0.7;
 
-    public double MISSILE_AVOID_DIST = 50;
+    public double MISSILE_AVOID_DIST = 80;
     public double MISSILE_AVOID_PROB = 0.2;
 
     public double SHOOT_DIST_THRESH = 1000;
@@ -58,7 +58,6 @@ public class MemoController1 implements RenderableBattleController {
     @Override
     public Action getAction(SimpleBattle gs, int playerId) {
         if(TICK_STEP < 1) TICK_STEP = 1;
-
         if(TICK_STEP > 1) {
             if(gs.getTicks() % TICK_STEP != 0) return action;
         }
@@ -69,10 +68,7 @@ public class MemoController1 implements RenderableBattleController {
         do_attack = false;
         do_chase = false;
         do_avoid = false;
-
-        // so they are rendered offscreen
-        target_pos.set(-1000, 1000);
-        desired_pos.set(-1000, 1000);
+        do_chicken = false;
 
         // random probability of attacking
         if(Math.random() < ATTACK_PROB) {
@@ -127,6 +123,7 @@ public class MemoController1 implements RenderableBattleController {
             action.thrust = 1;
         }
 
+//        action.thrust = 0;
 
         if(Math.random() < MISSILE_AVOID_PROB) {
            // ArrayList<Missile> missiles = new ArrayList<Missile>();
@@ -144,12 +141,12 @@ public class MemoController1 implements RenderableBattleController {
                 }
             }
 
-            // very dumb
+
             if(num_missiles > 0) {
                 avg_missile_pos.multiply(1.0/num_missiles);
                 do_avoid = true;
                 Vector2d vec_to_avg_missile_pos = Vector2d.subtract(avg_missile_pos, thisShip.s);
-                action.turn = Vector2d.crossMag(vec_to_avg_missile_pos, thisShip.s);
+                action.turn = Vector2d.crossMag(vec_to_avg_missile_pos, thisShip.d) < 0 ? - 1 : 1;
                 action.thrust = 1;
             }
             //for(Missile m : missiles) {
