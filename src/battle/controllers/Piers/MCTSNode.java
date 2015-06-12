@@ -10,13 +10,11 @@ import java.util.Random;
  */
 public class MCTSNode {
 
+    private static final double EPSILON = 1e-6;
     private static Action[] allActions;
     private static Action[][] allActionPairs;
     private static Random random = new Random();
     private static int numberOfActionsPerState = 15;
-
-    private static final double EPSILON = 1e-6;
-
     private Action ourMoveToThisState;
     private Action enemyMoveToThisState;
 
@@ -29,7 +27,7 @@ public class MCTSNode {
     private int playerID;
 
     private double totalValue = 0;
-    private double enemyTotalValue =0 ;
+    private double enemyTotalValue = 0;
     private int numberOfVisits = 1;
 
     private double explorationConstant;
@@ -145,13 +143,14 @@ public class MCTSNode {
             current.enemyTotalValue += alteredEnemyValue;
             current = current.parent;
         }
-        current.totalValue+= alteredValue;
+        current.totalValue += alteredValue;
         current.enemyTotalValue += alteredEnemyValue;
         current.numberOfVisits++;
     }
 
-    public double[] rollout(SimpleBattle state) {
-        while (!state.isGameOver()) {
+    public double[] rollout(SimpleBattle state, int maxDepth) {
+        int currentRolloutDepth = this.currentDepth;
+        while (maxDepth > currentRolloutDepth && !state.isGameOver()) {
             Action first = allActions[random.nextInt(allActions.length)];
             Action second = allActions[random.nextInt(allActions.length)];
             state.update(first, second);
@@ -160,16 +159,19 @@ public class MCTSNode {
     }
 
     public Action getBestAction() {
-        double bestScore = children[0].numberOfVisits;
-        int bestIndex = 0;
+        double bestScore = -Double.MAX_VALUE;
+        int bestIndex = -1;
 
-        for (int i = 1; i < numberOfChildrenExpanded; i++) {
-            double childScore = children[i].numberOfVisits + (random.nextFloat() * EPSILON);
-            if (childScore > bestScore) {
-                bestScore = childScore;
-                bestIndex = i;
+        for (int i = 0; i < numberOfChildrenExpanded; i++) {
+            if (children[i] != null) {
+                double childScore = children[i].totalValue + (random.nextFloat() * EPSILON);
+                if (childScore > bestScore) {
+                    bestScore = childScore;
+                    bestIndex = i;
+                }
             }
         }
+        if (bestIndex == -1) return allActions[0];
         return children[bestIndex].ourMoveToThisState;
     }
 
@@ -177,9 +179,9 @@ public class MCTSNode {
         return numberOfChildrenExpanded == allActionPairs.length;
     }
 
-    public void printAllChildren(){
+    public void printAllChildren() {
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < children.length; i++) {
+        for (int i = 0; i < children.length; i++) {
             builder.append("Value: ");
             builder.append(children[i].totalValue / children[i].numberOfVisits);
             builder.append(" Action: ");
