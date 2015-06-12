@@ -28,8 +28,13 @@ public class DaniController implements RenderableBattleController
     double thrustAmt = 1.5;
     double rotAmt = 1.5;
     int shotWait = 0;
-    Vector2d posSum;
-    Vector2d dirSum;
+
+    Vector2d meanMissilePos;
+    Vector2d meanMissileDir;
+    Vector2d missileLineA;
+    Vector2d missileLineB;
+    Vector2d segp;
+
     boolean anyMissiles = false;
 
     Vector2d targetPosition;
@@ -122,10 +127,72 @@ public class DaniController implements RenderableBattleController
         return p.dist( closestPointOnSegment(p,a,b) );
     }
 
-
     Vector2d getPerp( Vector2d v )
     {
         return new Vector2d(-v.y, v.x);
+    }
+
+    Vector2d keepDistanceVector( SimpleBattle gstate, Vector2d shipPos, Vector2d enemyPos )
+    {
+        if( shipPos.dist(enemyPos) < 200 )
+            return Vector2d.multiply( Vector2d.subtract(shipPos, enemyPos), 0.3 );
+
+        return new Vector2d(0,0);
+    }
+
+
+    Vector2d avoidBulletsVector( SimpleBattle gstate, Vector2d shipPos )
+    {
+        ArrayList<Missile> M = getMissiles(gstate);
+        meanMissilePos = new Vector2d(0,0, true);
+        meanMissileDir  = new Vector2d(0,0, true);
+
+        int c = 0;
+        for(Missile m : M)
+        {
+            meanMissilePos.add(m.s);
+            meanMissileDir.add(m.v);
+            c++;
+        }
+
+        // no missiles bail out
+        if(c==0)
+        {
+            anyMissiles = false;
+            System.out.println("No missiles");
+            return new Vector2d(0,0,true);
+        }
+
+        meanMissilePos.divide(c);
+        meanMissileDir.normalise();
+        // project onto main missile line
+        double min = 1000000;
+        double max = -1000000;
+
+        for(Missile m : M)
+        {
+            Vector2d p = new Vector2d(m.s,true);
+            p.subtract(meanMissilePos);
+            double d = dot(p, meanMissileDir);
+            if( d < min )
+                min = d;
+            if( d > max )
+                max = d;
+        }
+
+        missileLineA = Vector2d.add( meanMissilePos, Vector2d.multiply(meanMissileDir, min) );
+        missileLineB = Vector2d.add( meanMissilePos, Vector2d.multiply(meanMissileDir, max) );
+
+        anyMissiles = true;
+
+        segp = closestPointOnSegment( shipPos, missileLineA, missileLineB );
+        if( segp.dist(shipPos) < 100 )
+        {
+            Vector2d vavoid = Vector2d.subtract( shipPos, segp );
+            return Vector2d.multiply(vavoid, 1) ;
+        }
+
+        return new Vector2d(0,0,true);
     }
 
     @Override
@@ -137,32 +204,14 @@ public class DaniController implements RenderableBattleController
 
         Vector2d enemyPos = enemy.s;
         Vector2d thisPos = ship.s;
-        Vector2d d = new Vector2d( enemyPos.x - thisPos.x, enemyPos.y - thisPos.y );
+
+        // Direction towards enemy
+        Vector2d d = new Vector2d( enemyPos.x - thisPos.x, enemyPos.y - thisPos.y, true );
+        Vector2d vavoid = avoidBulletsVector( gstate, thisPos );
+        d.add(vavoid);
+        d.add( keepDistanceVector(gstate, thisPos, enemyPos) );
+
         double rot = angleBetween(ship.d, d)*rotAmt;
-
-        ArrayList<Missile> M = getMissiles(gstate);
-        posSum = new Vector2d(0,0, true);
-        dirSum = new Vector2d(0,0, true);
-        int c = 0;
-        for(Missile m : M)
-        {
-            posSum.add(m.s);
-            dirSum.add(m.v);
-            c++;
-        }
-
-        if(c!=0)
-        {
-            //System.out.println("Missiles: " + c);
-            dirSum.normalise();
-            posSum.multiply(1.0 / c);
-            anyMissiles = true;
-        }
-        else
-        {
-            anyMissiles = false;
-            System.out.println("No missiles");
-        }
 
         if(inView(ship, enemy) && shotWait <= 0)
         {
@@ -185,6 +234,11 @@ public class DaniController implements RenderableBattleController
         g.drawOval((int)(center.x - r), (int)(center.y - r), (int)(r*2), (int)(r*2));
     }
 
+    public void drawLine( Graphics2D g, Vector2d a, Vector2d b )
+    {
+        g.drawLine((int)a.x, (int)a.y, (int)b.x, (int)b.y);
+    }
+
     @Override
     public void render( Graphics2D g, NeuroShip s )
     {
@@ -195,10 +249,14 @@ public class DaniController implements RenderableBattleController
 
         if(anyMissiles)
         {
-            drawCircle(g, posSum, 4.0);
-            int dx = (int)(dirSum.x * 100);
-            int dy = (int)(dirSum.y * 100);
-            g.drawLine((int)posSum.x - dx, (int)posSum.y - dy, (int)posSum.x + dx, (int)posSum.y + dy);
+            drawCircle(g, meanMissilePos, 4.0);
+//            int dx = (int)(meanMissileDir.x * 100);
+//            int dy = (int)(meanMissileDir.y * 100);
+            drawLine( g, Vector2d.subtract(meanMissilePos, Vector2d.multiply(meanMissileDir, 100)),
+                    Vector2d.add(meanMissilePos, Vector2d.multiply(meanMissileDir, 100)) );
+//            g.drawLine((int)meanMissilePos.x - dx, (int)meanMissilePos.y - dy, (int)meanMissilePos.x + dx, (int)meanMissilePos.y + dy);
+            drawCircle(g, missileLineA, 7.0);
+            drawCircle(g, missileLineB, 7.0);
         }
     }
 }

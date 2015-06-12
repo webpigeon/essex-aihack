@@ -21,7 +21,7 @@ public class DaniBattleTest {
         SimpleBattle battle = new SimpleBattle();
 
         BattleController fire1 = new DaniController();
-        BattleController fire2 = new DaniController();
+        BattleController fire2 = new RotateAndShoot();
 
         battle.playGame(fire1, fire2);
     }
