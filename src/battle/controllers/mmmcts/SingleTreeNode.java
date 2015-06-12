@@ -218,7 +218,7 @@ public class SingleTreeNode
     public double value(SimpleBattle a_gameState, int playerId) {
 
         //double score = OGState.getPoints(playerId);
-        double score = 0;
+        double score = 5000;
 
         NeuroShip s1,s2;
         s1 = a_gameState.getShip(playerId);
@@ -230,16 +230,21 @@ public class SingleTreeNode
         }
 
         if(a_gameState.getPoints(playerId) > OGState.getPoints(playerId)) {
-            score += HUGE_POSITIVE;
+            //score += HUGE_POSITIVE;
+            score += 100;
         }
 
-        int mleft = Math.abs(a_gameState.getMissilesLeft(playerId));
+        int mleft =  Math.abs(a_gameState.getMissilesLeft(playerId));
+        int mused = Math.abs(OGState.getMissilesLeft(playerId)) - (mleft);
         double dist = s1.s.dist(s2.s);
 
         if(mleft > 0) {
-            score += 35 * mleft;
+            //score -= 2000 * mused;
+            score += 10 * mleft;
 
-            score += (1000 - dist);
+            //int gravitateTowards = 100;
+            //score += 10 * -Math.abs(gravitateTowards - dist);
+            score += -dist * 6;
         } else {
             score += dist * 6;
         }
