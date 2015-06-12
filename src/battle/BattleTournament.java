@@ -35,9 +35,12 @@ public class BattleTournament {
     }
 
     public void runMatchups() {
+        System.out.println(controllers.size() + " controllers");
+
         for (BattleController p1 : controllers) {
             for (BattleController p2 : controllers) {
                 if (p1 != p2) {
+                    System.out.println("running "+p1.getClass().getSimpleName()+" vs "+p2.getClass().getSimpleName());
                     runRounds(p1, p2, NUM_ROUNDS);
                 }
             }
