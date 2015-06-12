@@ -1,6 +1,7 @@
 package battle.controllers.Piers;
 
 import asteroids.Action;
+import battle.NeuroShip;
 import battle.SimpleBattle;
 
 import java.util.Random;
@@ -12,11 +13,17 @@ public class MCTSNode {
 
     private static final double EPSILON = 1e-6;
     private static Action[] allActions;
+    private static Action[] notShootActions;
     private static Action[][] allActionPairs;
+    private static Action[][] p1Notp2Not;
+    private static Action[][] p1Notp2Yes;
+    private static Action[][] p1Yesp2Not;
     private static Random random = new Random();
     private static int numberOfActionsPerState = 15;
     private Action ourMoveToThisState;
     private Action enemyMoveToThisState;
+
+    private Action[][] possibleActions;
 
     private MCTSNode parent;
     private MCTSNode[] children;
@@ -38,9 +45,10 @@ public class MCTSNode {
         this.playerID = playerID;
         ourNode = true;
         children = new MCTSNode[allActionPairs.length];
+        possibleActions = p1Yesp2Not;
     }
 
-    private MCTSNode(MCTSNode parent, Action ourMoveToThisState, Action enemyMoveToThisState) {
+    private MCTSNode(MCTSNode parent, Action ourMoveToThisState, Action enemyMoveToThisState, Action[][] possibleActions) {
         this.explorationConstant = parent.explorationConstant;
         this.ourMoveToThisState = ourMoveToThisState;
         this.enemyMoveToThisState = enemyMoveToThisState;
@@ -49,26 +57,48 @@ public class MCTSNode {
         this.currentDepth = parent.currentDepth + 1;
         this.playerID = parent.playerID;
         this.ourNode = parent.ourNode;
+        this.possibleActions = possibleActions;
     }
 
     public static void setAllActions() {
         allActions = new Action[12];
+        notShootActions = new Action[6];
         int i = 0;
+        int j = 0;
         for (double thrust = 0; thrust <= 1; thrust += 1) {
             for (double turn = -1; turn <= 1; turn += 1) {
                 allActions[i] = new Action(thrust, turn, true);
                 i++;
                 allActions[i] = new Action(thrust, turn, false);
+                notShootActions[j] = allActions[i];
                 i++;
+                j++;
             }
         }
         i = 0;
         allActionPairs = new Action[144][2];
+        p1Yesp2Not = new Action[72][2];
+        p1Notp2Yes = new Action[72][2];
+        p1Notp2Not = new Action[36][2];
         for (Action action : allActions) {
             for (Action otherAction : allActions) {
                 allActionPairs[i++] = new Action[]{
                         action, otherAction
                 };
+            }
+        }
+        i = 0;
+        for (Action action : notShootActions) {
+            for (Action otherAction : notShootActions) {
+                p1Notp2Not[i++] = new Action[]{action, otherAction};
+            }
+        }
+        i = 0;
+        for (Action action : notShootActions) {
+            for (Action otherAction : allActions) {
+                p1Notp2Yes[i] = new Action[]{action, otherAction};
+                p1Yesp2Not[i] = new Action[]{otherAction, action};
+                i++;
             }
         }
     }
@@ -80,18 +110,42 @@ public class MCTSNode {
                 current = current.selectBestChild();
                 state.update(current.ourMoveToThisState, current.enemyMoveToThisState);
             } else {
-                return current.expand();
+                return current.expand(state);
             }
         }
         return current;
     }
 
-    public MCTSNode expand() {
-        int childToExpand = random.nextInt(allActionPairs.length);
-        while (children[childToExpand] != null) {
-            childToExpand = random.nextInt(allActionPairs.length);
+    public MCTSNode expand(SimpleBattle state) {
+
+        // Calculate the possible action spaces
+        // can we shoot
+        NeuroShip p1 = state.getShip(playerID);
+        NeuroShip p2 = state.getShip(playerID == 0 ? 1 : 0);
+        double p1Seesp2 = p1.s.dist(p2.s);
+
+        double p2Seesp1 = p2.s.dist(p1.s);
+
+        boolean canP1SeeP2 = (p1Seesp2 < 100);
+        boolean canP2SeeP1 = (p2Seesp1 < 100);
+        Action[][] childPossibleActions = allActionPairs;
+
+        if (canP1SeeP2 && !canP2SeeP1) {
+            childPossibleActions = p1Yesp2Not;
         }
-        children[childToExpand] = new MCTSNode(this, allActionPairs[childToExpand][0], allActionPairs[childToExpand][1]);
+        if (!canP1SeeP2 && canP2SeeP1) {
+            childPossibleActions = p1Notp2Yes;
+        }
+        if (!canP1SeeP2 && !canP2SeeP1) {
+            childPossibleActions = p1Notp2Not;
+        }
+        children = new MCTSNode[childPossibleActions.length];
+
+        int childToExpand = random.nextInt(childPossibleActions.length);
+        while (children[childToExpand] != null) {
+            childToExpand = random.nextInt(childPossibleActions.length);
+        }
+        children[childToExpand] = new MCTSNode(this, childPossibleActions[childToExpand][0], childPossibleActions[childToExpand][1], childPossibleActions);
         numberOfChildrenExpanded++;
         return children[childToExpand];
     }
@@ -101,15 +155,19 @@ public class MCTSNode {
     }
 
     public Action selectBestOpposingAction() {
-        double bestScore = children[0].enemyTotalValue;
-        int bestIndex = 0;
-        for (int i = 1; i < children.length; i++) {
-            double score = children[i].enemyTotalValue;
-            if (score > bestScore) {
-                bestScore = score;
-                bestIndex = i;
+        if (children == null) return notShootActions[0];
+        double bestScore = -Double.MAX_VALUE;
+        int bestIndex = -1;
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] != null) {
+                double score = children[i].enemyTotalValue;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestIndex = i;
+                }
             }
         }
+        if (bestIndex == -1) return notShootActions[0];
         return children[bestIndex].enemyMoveToThisState;
     }
 
@@ -117,11 +175,13 @@ public class MCTSNode {
         double bestScore = -Double.MAX_VALUE;
         int bestIndex = -1;
         for (int i = 0; i < children.length; i++) {
-            if (children[i].enemyMoveToThisState == enemyMove) {
-                double score = children[i].calculateChild();
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestIndex = i;
+            if (children[i] != null) {
+                if (children[i].enemyMoveToThisState == enemyMove) {
+                    double score = children[i].calculateChild();
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestIndex = i;
+                    }
                 }
             }
         }
@@ -161,8 +221,9 @@ public class MCTSNode {
     public Action getBestAction() {
         double bestScore = -Double.MAX_VALUE;
         int bestIndex = -1;
+        if (children == null) return allActions[0];
 
-        for (int i = 0; i < numberOfChildrenExpanded; i++) {
+        for (int i = 0; i < children.length; i++) {
             if (children[i] != null) {
                 double childScore = children[i].totalValue + (random.nextFloat() * EPSILON);
                 if (childScore > bestScore) {
@@ -176,7 +237,7 @@ public class MCTSNode {
     }
 
     private boolean fullyExpanded() {
-        return numberOfChildrenExpanded == allActionPairs.length;
+        return numberOfChildrenExpanded == possibleActions.length;
     }
 
     public void printAllChildren() {
