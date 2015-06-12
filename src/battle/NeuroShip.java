@@ -40,14 +40,18 @@ public class NeuroShip extends GameObject {
     // position and velocity
     public Vector2d d;
 
+    // played id (used for drawing)
+    int playerID;
 
-    public NeuroShip(Vector2d s, Vector2d v, Vector2d d) {
+
+    public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
         super(new Vector2d(s), new Vector2d(v));
         this.d = new Vector2d(d);
+        this.playerID = playerID;
     }
 
     public NeuroShip copy() {
-        NeuroShip ship = new NeuroShip(s, v, d);
+        NeuroShip ship = new NeuroShip(s, v, d, playerID);
         ship.releaseVelocity = releaseVelocity;
         return ship;
     }
@@ -137,6 +141,7 @@ public class NeuroShip extends GameObject {
     }
 
     public void draw(Graphics2D g) {
+        color = playerID == 0 ? Color.green : Color.blue;
         AffineTransform at = g.getTransform();
         g.translate(s.x, s.y);
         double rot = Math.atan2(d.y, d.x) + Math.PI / 2;
