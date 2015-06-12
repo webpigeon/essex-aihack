@@ -46,8 +46,8 @@ public class NeuroShip extends GameObject {
 
 
     public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
-        super(new Vector2d(s), new Vector2d(v));
-        this.d = new Vector2d(d);
+        super(new Vector2d(s, true), new Vector2d(v, true));
+        this.d = new Vector2d(d, true);
         this.playerID = playerID;
     }
 
@@ -124,7 +124,7 @@ public class NeuroShip extends GameObject {
         // System.out.println("Trying a missile launch");
         if (releaseVelocity > maxRelease) {
             releaseVelocity = Math.max(releaseVelocity, missileMinVelocity * 2);
-            Missile m = new Missile(s, new Vector2d(0, 0));
+            Missile m = new Missile(s, new Vector2d(0, 0, true));
             releaseVelocity = Math.min(releaseVelocity, maxRelease);
             m.v.add(d, releaseVelocity);
             // make it clear the ship
