@@ -11,7 +11,7 @@ public class PiersMCTS implements BattleController {
 
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
-        MCTSNode root = new MCTSNode(2.0);
+        MCTSNode root = new MCTSNode(2.0, playerId);
 
         return null;
     }
