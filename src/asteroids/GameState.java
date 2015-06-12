@@ -231,8 +231,9 @@ public class GameState {
         if (a.index < radii.length - 1) {
             // add some new ones at this position
             for (int i=0; i<nSplits; i++) {
-                Vector2d v1 = a.v.copy().add(rand.nextGaussian(), rand.nextGaussian());
-                Asteroid a1 = new Asteroid(this, a.s.copy(), v1, a.index + 1);
+                Vector2d v1 = new Vector2d(a.v);
+                v1.add(rand.nextGaussian(), rand.nextGaussian());
+                Asteroid a1 = new Asteroid(this, new Vector2d(a.s), v1, a.index + 1);
                 list.add(a1);
             }
         }
@@ -249,8 +250,9 @@ public class GameState {
         if (a.index < radii.length - 1) {
             // add some new ones at this position
             for (int i=0; i<nSplits; i++) {
-                Vector2d v1 = a.v.copy().add(rand.nextGaussian(), rand.nextGaussian());
-                Asteroid a1 = new AsteroidTwoFace(this, a.s.copy(), v1, a.index + 1);
+                Vector2d v1 = new Vector2d(a.v);
+                v1.add(rand.nextGaussian(), rand.nextGaussian());
+                Asteroid a1 = new AsteroidTwoFace(this, new Vector2d(a.s), v1, a.index + 1);
                 list.add(a1);
             }
         }

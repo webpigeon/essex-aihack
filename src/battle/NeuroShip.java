@@ -109,7 +109,7 @@ public class NeuroShip extends GameObject {
         v.add(d, thrustSpeed * t * 0.3 / 2);
         v.y += gravity;
         // v.x = 0.5;
-        v.mul(loss);
+        v.multiply(loss);
 
         // This is fairly basic, but it'll do for now...
         v.x = clamp(v.x, -maxSpeed, maxSpeed);

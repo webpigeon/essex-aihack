@@ -94,7 +94,7 @@ public class Ship extends GameObject {
         v.add(d, action.thrust * t * 0.3 / 2);
         v.y += gravity;
         // v.x = 0.5;
-        v.mul(loss);
+        v.multiply(loss);
         s.add(v);
         // now create a missile if necessary
         // if the release velocity is zero

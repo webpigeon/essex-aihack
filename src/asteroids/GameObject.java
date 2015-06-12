@@ -20,8 +20,8 @@ public abstract class GameObject {
     public abstract GameObject copy();
 
     protected GameObject updateClone(GameObject copyObject) {
-        copyObject.s = s.copy();
-        copyObject.v = v.copy();
+        copyObject.s = new Vector2d(s);
+        copyObject.v = new Vector2d(v);
         copyObject.isTarget = isTarget;
         copyObject.dead = dead;
         copyObject.r = r;
