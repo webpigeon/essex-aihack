@@ -18,13 +18,14 @@ import java.awt.geom.AffineTransform;
  * Created by Memo Akten on 11/06/15.
  */
 public class MemoController1 implements RenderableBattleController {
-    public double DESIRED_DIST_TO_SHIP_MIN = 50;
-    public double DESIRED_DIST_TO_SHIP_MAX = 200;
-    public double DESIRED_DIST_CHANGE_PROB = 0.003;
-    public double DIST_TO_TARGET_THRESH = 40;
-    public double ROT_TO_TARGET_THRESH = 5 * Math.PI / 180.0;
+    public double DESIRED_DIST_TO_ENEMY_MIN = 50;
+    public double DESIRED_DIST_TO_ENEMY_MAX = 200;
+    public double DESIRED_ROT_OFF_ENEMY = 30 * Math.PI / 180.0; // how many radians variance (+-) in axis off enemies back
+    public double DESIRED_POS_CHANGE_PROB = 0.005;  //probability of picking new position to goto
+    public double DIST_TO_TARGET_THRESH = 80;   // threshold for when we've reached our desired pos
+    public double ROT_TO_TARGET_THRESH = 5 * Math.PI / 180.0;   // threshold for when we're aiming at desired pos
 
-    public double ATTACK_PROB = 0.5;
+    public double ATTACK_PROB = 0.2;
     public double ATTACK_SHOOT_PROB = 0.5;
     public double ATTACK_THRUST_PROB = 0.00;
     public double ATTACK_ROT_THRESH = 5 * Math.PI / 180.0;
@@ -33,8 +34,12 @@ public class MemoController1 implements RenderableBattleController {
     public double CHASE_THRUST_PROB = 0.3;
     public double CHASE_DOT_THRESH = 0.9;
 
+    public double MISSILE_AVOID_DIST = 100;
+    public double MISSILE_AVOID_PROB = 0.5;
+
     Action action;
-    double desired_dist_to_ship = 0;
+    double desired_dist_to_enemy = 0;
+    double desired_rot_off_enemy = 0;
     Vector2d desired_pos = new Vector2d(true);
     Vector2d vec_to_desired_pos = new Vector2d(true);
     Vector2d target_pos = new Vector2d(true);
@@ -55,16 +60,22 @@ public class MemoController1 implements RenderableBattleController {
         target_pos.set(-100, 100);
         desired_pos.set(-100, 100);
 
+        // random probability of attacking
         if(Math.random() < ATTACK_PROB) {
             do_attack = true;
+
         } else {
             // pick desired distance to ship
-            if(desired_dist_to_ship == 0 || Math.random() < DESIRED_DIST_CHANGE_PROB) {
-                desired_dist_to_ship = Math.random() * (DESIRED_DIST_TO_SHIP_MAX - DESIRED_DIST_TO_SHIP_MIN) + DESIRED_DIST_TO_SHIP_MIN;
+            if(desired_dist_to_enemy == 0 || Math.random() < DESIRED_POS_CHANGE_PROB) {
+                desired_dist_to_enemy = Math.random() * (DESIRED_DIST_TO_ENEMY_MAX - DESIRED_DIST_TO_ENEMY_MIN) + DESIRED_DIST_TO_ENEMY_MIN;
+                desired_rot_off_enemy = (Math.random() - 0.5) * DESIRED_ROT_OFF_ENEMY * 2;
             }
 
             // set desired position behind enemy ship
-            desired_pos = Vector2d.add(otherShip.s, otherShip.d, -desired_dist_to_ship);
+            Vector2d desired_pos_offset = Vector2d.multiply(otherShip.d, desired_dist_to_enemy);
+            desired_pos_offset.rotate(desired_rot_off_enemy);
+
+            desired_pos = Vector2d.subtract(otherShip.s, desired_pos_offset);
             vec_to_desired_pos = Vector2d.subtract(desired_pos, thisShip.s);
 
             // goto desired pos
@@ -83,7 +94,9 @@ public class MemoController1 implements RenderableBattleController {
 
         if(do_attack) {
             action.thrust = Math.random() < ATTACK_THRUST_PROB ? 1 : 0;
-            target_pos = new Vector2d(otherShip.s, true); // TODO, include velocity vector in target pos
+
+            // TODO, include velocity vector in target pos
+            target_pos = new Vector2d(otherShip.s, true);
             action.turn = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
             action.shoot = action.turn == 0 ? Math.random() < ATTACK_SHOOT_PROB : false;
         }
