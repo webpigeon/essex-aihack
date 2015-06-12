@@ -14,7 +14,7 @@ import java.util.*;
  * Created by jwalto on 11/06/2015.
  */
 public class BattleTournament {
-    private final static Integer NUM_ROUNDS = 2;
+    private final static Integer NUM_ROUNDS = 5;
 
     private List<BattleController> controllers;
     private SimpleBattle battleEngine;
@@ -22,7 +22,7 @@ public class BattleTournament {
 
     public BattleTournament() {
         this.controllers = new ArrayList<>();
-        this.battleEngine = new SimpleBattle();
+        this.battleEngine = new SimpleBattle(false);
         this.scores = new HashMap<>();
     }
 
@@ -113,7 +113,6 @@ public class BattleTournament {
         bt.addController(new PiersMCTS());
 
         // Dippy AIs
-        bt.addController(new EmptyController());
         bt.addController(new FireForwardController());
         bt.addController(new RotateAndShoot());
 
@@ -121,8 +120,8 @@ public class BattleTournament {
 
         Map<BattleController, BattleStats> scores = bt.getScores();
         for (Map.Entry<BattleController, BattleStats>  bs : scores.entrySet()) {
-            String formatStr = "%s %s";
-            System.out.println(String.format(formatStr, bs.getKey(), bs.getValue()));
+            String formatStr = "%50s %s";
+            System.out.println(String.format(formatStr, bs.getKey().getClass().getSimpleName(), bs.getValue()));
         }
     }
 }
