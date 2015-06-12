@@ -10,7 +10,8 @@ public class MemoControllerUtils {
 
     // returns turn value (-1, 0, 1)
     static double lookAt(Vector2d s, Vector2d d, Vector2d lookat, double rot_threshold) {
-        Vector2d desired_rot_vec = lookat.copy();
+        Vector2d desired_rot_vec = new Vector2d(lookat, true);
+
         desired_rot_vec.add(s, -1);
 
         double current_rot = Math.atan2(d.y, d.x);
@@ -23,16 +24,15 @@ public class MemoControllerUtils {
         }
     }
 
-    // fills in Action with turn and thrust
-    static double thrustTo(Vector2d s, Vector2d d, Vector2d desired_pos, double dist_threshold, double rot_threshold, Action action) {
+    // fills in Action with turn, returns whether we or not we've reached target
+    static boolean thrustTo(Vector2d s, Vector2d d, Vector2d desired_pos, double dist_threshold, double rot_threshold, Action action) {
         double dist_to_desired_pos = s.dist(desired_pos);
         if(dist_to_desired_pos < dist_threshold) {
-            action.thrust = 0;
+            return true;
         } else {
-            action.thrust = 1;
             action.turn = lookAt(s, d, desired_pos, rot_threshold);
+            return false;
         }
-        return action.thrust;
     }
 
 }
