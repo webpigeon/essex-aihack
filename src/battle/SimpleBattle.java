@@ -27,7 +27,8 @@ public class SimpleBattle {
     static int nTicks = 1000;
     static int pointsPerKill = 10;
     static int releaseVelocity = 5;
-    static boolean visible = true;
+
+    boolean visible = true;
 
     ArrayList<BattleController> controllers;
 
@@ -37,6 +38,7 @@ public class SimpleBattle {
     NeuroShip s1, s2;
     BattleController p1, p2;
     BattleView view;
+    int currentTick;
 
     public SimpleBattle() {
         this.objects = new ArrayList<>();
@@ -56,9 +58,7 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
-        int currentTicks = 0;
-
-        while (currentTicks++ < nTicks) {
+        while (!isGameOver()) {
             update();
         }
 
@@ -68,16 +68,17 @@ public class SimpleBattle {
     protected void reset() {
         stats.clear();
         objects.clear();
-        s1 = buildShip(250, 250);
-        s2 = buildShip(300, 300);
+        s1 = buildShip(250, 250, 0);
+        s2 = buildShip(300, 300, 1);
+        this.currentTick = 0;
     }
 
-    protected NeuroShip buildShip(int x, int y) {
+    protected NeuroShip buildShip(int x, int y, int playerID) {
         Vector2d position = new Vector2d(x, y);
         Vector2d speed = new Vector2d();
         Vector2d direction = new Vector2d(1, 0);
 
-        return new NeuroShip(position, speed, direction );
+        return new NeuroShip(position, speed, direction, playerID );
     }
 
     public void update() {
@@ -101,16 +102,21 @@ public class SimpleBattle {
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
         if (a2.shoot) fireMissile(s2.s, s2.d, 1);
 
+        wrap(s1);
+        wrap(s2);
+
         // here need to add the game objects ...
         java.util.List<GameObject> killList = new ArrayList<GameObject>();
         for (GameObject object : objects) {
             object.update();
+            wrap(object);
             if (object.dead()) {
                 killList.add(object);
             }
         }
 
         objects.removeAll(killList);
+        currentTick++;
 
         if (visible) {
             view.repaint();
@@ -123,6 +129,8 @@ public class SimpleBattle {
         SimpleBattle state = new SimpleBattle();
         state.objects = copyObjects();
         state.stats = copyStats();
+        state.currentTick = currentTick;
+        state.visible = false; //stop MCTS people having all the games :p
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
@@ -206,6 +214,9 @@ public class SimpleBattle {
 
     public void draw(Graphics2D g) {
         // for (Object ob : objects)
+        if (s1 == null || s2 == null) {
+            return;
+        }
 
         // System.out.println("In draw(): " + n);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -237,11 +248,37 @@ public class SimpleBattle {
         return new ArrayList<>(objects);
     }
 
-    public PlayerStats getStats(int playerID) {
+    public int getPoints(int playerID) {
         assert playerID < 2;
         assert playerID >= 0;
 
-        return stats.get(playerID);
+        return stats.get(playerID).nPoints;
+    }
+
+    public int getMissilesLeft(int playerID) {
+        assert playerID < 2;
+        assert playerID >= 0;
+
+        return stats.get(playerID).nMissiles - nMissiles;
+    }
+
+    private void wrap(GameObject ob) {
+        // only wrap objects which are wrappable
+        if (ob.wrappable()) {
+            ob.s.x = (ob.s.x + width) % width;
+            ob.s.y = (ob.s.y + height) % height;
+        }
+    }
+
+    public boolean isGameOver() {
+        if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
+            //ensure that there are no bullets left in play
+            if (objects.isEmpty()) {
+                return true;
+            }
+        }
+
+        return currentTick >= nTicks;
     }
 
     static class PlayerStats {

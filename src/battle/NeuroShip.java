@@ -37,20 +37,21 @@ public class NeuroShip extends GameObject {
 
     static double gravity = 0.0;
 
-    public Action action;
-
     // position and velocity
     public Vector2d d;
 
+    // played id (used for drawing)
+    int playerID;
 
-    public NeuroShip(Vector2d s, Vector2d v, Vector2d d) {
+
+    public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
         super(new Vector2d(s), new Vector2d(v));
         this.d = new Vector2d(d);
+        this.playerID = playerID;
     }
 
     public NeuroShip copy() {
-        NeuroShip ship = new NeuroShip(s, v, d);
-        ship.action = new Action(action);
+        NeuroShip ship = new NeuroShip(s, v, d, playerID);
         ship.releaseVelocity = releaseVelocity;
         return ship;
     }
@@ -73,8 +74,16 @@ public class NeuroShip extends GameObject {
         // System.out.println("Reset the ship ");
     }
 
-    public void update() {
-        update(action);
+    private static double clamp(double v, double min, double max) {
+        if (v > max) {
+            return max;
+        }
+
+        if (v < min) {
+            return min;
+        }
+
+        return v;
     }
 
     public NeuroShip update(Action action) {
@@ -91,20 +100,17 @@ public class NeuroShip extends GameObject {
             thrusting = false;
         }
 
+        //prevent people from cheating
+        double thrustSpeed = clamp(action.thrust, 0, 1);
+        double turnAngle = clamp(action.turn, -1, 1);
 
-        d.rotate(action.turn * steerStep);
-        v.add(d, action.thrust * t * 0.3 / 2);
+        d.rotate(turnAngle * steerStep);
+        v.add(d, thrustSpeed * t * 0.3 / 2);
         v.y += gravity;
         // v.x = 0.5;
         v.mul(loss);
         s.add(v);
-        // now create a missile if necessary
-        // if the release velocity is zero
-        releaseVelocity += 1.0;
-        if (action.shoot) {
-            tryMissileLaunch();
-        } else {
-        }
+
         return this;
     }
 
@@ -129,7 +135,13 @@ public class NeuroShip extends GameObject {
         return s + "\t " + v;
     }
 
+    @Override
+    public void update() {
+        throw new IllegalArgumentException("You shouldn't be calling this...");
+    }
+
     public void draw(Graphics2D g) {
+        color = playerID == 0 ? Color.green : Color.blue;
         AffineTransform at = g.getTransform();
         g.translate(s.x, s.y);
         double rot = Math.atan2(d.y, d.x) + Math.PI / 2;
