@@ -24,7 +24,7 @@ public class MMMCTS implements BattleController {
 
     public static int MACRO_ACTION_LENGTH = 1;
 
-    public static int TIMETOTHINK = 40;
+    public static int TIMETOTHINK = 20;
 
     /**
      * Random generator for the agent.
