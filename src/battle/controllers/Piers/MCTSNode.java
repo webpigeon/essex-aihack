@@ -108,6 +108,34 @@ public class MCTSNode {
         return children[bestIndex];
     }
 
+    public Action selectBestOpposingAction() {
+        double bestScore = children[0].enemyTotalValue;
+        int bestIndex = 0;
+        for (int i = 1; i < children.length; i++) {
+            double score = children[i].enemyTotalValue;
+            if (score > bestScore) {
+                bestScore = score;
+                bestIndex = i;
+            }
+        }
+        return children[bestIndex].enemyMoveToThisState;
+    }
+
+    public MCTSNode selectBestChildFeaturingEnemyMove(Action enemyMove) {
+        double bestScore = -Double.MAX_VALUE;
+        int bestIndex = -1;
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].enemyMoveToThisState == enemyMove) {
+                double score = children[i].totalValue;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestIndex = i;
+                }
+            }
+        }
+        return children[bestIndex];
+    }
+
     public double calculateChild() {
         return (totalValue / numberOfVisits) +
                 (explorationConstant * (Math.sqrt(Math.log(parent.numberOfVisits) / numberOfVisits)));
