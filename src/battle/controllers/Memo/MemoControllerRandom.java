@@ -14,7 +14,7 @@ import battle.controllers.Memo.MemoControllerUtils;
  * Created by Memo Akten on 11/06/15.
  */
 public class MemoControllerRandom implements BattleController {
-    public double MULT = 1.0;
+    public double MULT = 0.0001;
 
     public double ATTACK_PROB = 0.2 * MULT;
     public double ATTACK_SHOOT_PROB = 0.5 * MULT;
@@ -22,7 +22,7 @@ public class MemoControllerRandom implements BattleController {
     public double ATTACK_ROT_THRESH = 5 * Math.PI / 180.0;
     final public double ATTACK_ROT_THRESH_RANGE = Math.PI/2;
 
-    public double FLEE_ROT_CHANGE_PROB = 0.3 * MULT;
+    public double FLEE_ROT_CHANGE_PROB = 0.3;
     public double FLEE_SHOOT_PROB = 0.02 * MULT;
     public double FLEE_THRUST_PROB = 0.8 * MULT;
     public double FLEE_TURN_PROB = 0.3 * MULT;
