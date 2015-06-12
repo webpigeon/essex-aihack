@@ -5,11 +5,18 @@ package battle.controllers.Piers;
  */
 public class GameTimer {
 
-    long startTime;
-    long timeBudget;
+    private long startTime;
+    private long timeBudget;
+
+    private boolean timeSet = false;
 
     public GameTimer() {
         startTime = System.nanoTime();
+    }
+
+    public GameTimer(long budget) {
+        this();
+        setTimeBudgetMilliseconds(budget);
     }
 
     public long elapsed() {
@@ -21,7 +28,9 @@ public class GameTimer {
     }
 
     public void setTimeBudgetMilliseconds(long budget) {
+        if(timeSet) throw new IllegalAccessError("You shouldn't try to set the time budget now");
         timeBudget = (long) (budget * 1.0E6);
+        timeSet = true;
     }
 
     public long remainingTimeMilliseconds() {

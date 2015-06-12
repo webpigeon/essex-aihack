@@ -9,11 +9,15 @@ import battle.SimpleBattle;
  */
 public class PiersMCTS implements BattleController {
 
+    public PiersMCTS() {
+        MCTSNode.setAllActions();
+    }
+
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
         MCTSNode root = new MCTSNode(2.0, playerId);
         GameTimer timer = new GameTimer();
-        timer.setTimeBudgetMilliseconds(100);
+        timer.setTimeBudgetMilliseconds(40);
         while (timer.remainingTimePercent() > 10) {
             MCTSNode travel = root.select(gameStateCopy, 3);
             double[] results = travel.rollout(gameStateCopy);
