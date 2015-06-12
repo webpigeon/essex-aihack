@@ -55,6 +55,10 @@ public class SimpleBattle {
         }
     }
 
+    public int getTicks() {
+        return currentTick;
+    }
+
     public int playGame(BattleController p1, BattleController p2) {
         this.p1 = p1;
         this.p2 = p2;
@@ -90,8 +94,8 @@ public class SimpleBattle {
         // get the actions from each player
 
         // apply them to each player's ship, taking actions as necessary
-        Action a1 = p1.getAction(this, 0);
-        Action a2 = p2.getAction(this, 1);
+        Action a1 = p1.getAction(this.clone(), 0);
+        Action a2 = p2.getAction(this.clone(), 1);
         update(a1, a2);
     }
 
