@@ -60,9 +60,6 @@ public class SimpleBattle {
         this.p2 = p2;
         reset();
 
-        stats.add(new PlayerStats(0, 0));
-        stats.add(new PlayerStats(0, 0));
-
         while (!isGameOver()) {
             update();
         }
@@ -70,12 +67,15 @@ public class SimpleBattle {
         return 0;
     }
 
-    protected void reset() {
+    public void reset() {
         stats.clear();
         objects.clear();
         s1 = buildShip(250, 250, 0);
         s2 = buildShip(300, 300, 1);
         this.currentTick = 0;
+
+        stats.add(new PlayerStats(0, 0));
+        stats.add(new PlayerStats(0, 0));
     }
 
     protected NeuroShip buildShip(int x, int y, int playerID) {
@@ -90,8 +90,8 @@ public class SimpleBattle {
         // get the actions from each player
 
         // apply them to each player's ship, taking actions as necessary
-        Action a1 = p1.getAction(this, 0);
-        Action a2 = p2.getAction(this, 1);
+        Action a1 = p1.getAction(this.clone(), 0);
+        Action a2 = p2.getAction(this.clone(), 1);
         update(a1, a2);
     }
 
