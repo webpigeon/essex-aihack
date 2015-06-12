@@ -237,9 +237,9 @@ public class SingleTreeNode
         double dist = s1.s.dist(s2.s);
 
         if(mleft > 0) {
-            score += 25 * mleft;
+            score += 35 * mleft;
 
-            score += 6 * (297 - dist);
+            score += (1000 - dist);
         } else {
             score += dist * 6;
         }
