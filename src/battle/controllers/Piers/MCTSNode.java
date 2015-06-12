@@ -37,6 +37,7 @@ public class MCTSNode {
         currentDepth = 0;
         this.playerID = playerID;
         ourNode = true;
+        children = new MCTSNode[allActionPairs.length];
     }
 
     private MCTSNode(MCTSNode parent, Action ourMoveToThisState, Action enemyMoveToThisState) {
@@ -44,7 +45,7 @@ public class MCTSNode {
         this.ourMoveToThisState = ourMoveToThisState;
         this.enemyMoveToThisState = enemyMoveToThisState;
         this.parent = parent;
-        this.children = new MCTSNode[MCTSNode.allActions.length];
+        this.children = new MCTSNode[allActionPairs.length];
         this.currentDepth = parent.currentDepth + 1;
         this.playerID = parent.playerID;
         this.ourNode = parent.ourNode;
@@ -91,18 +92,37 @@ public class MCTSNode {
             childToExpand = random.nextInt(allActionPairs.length);
         }
         children[childToExpand] = new MCTSNode(this, allActionPairs[childToExpand][0], allActionPairs[childToExpand][1]);
+        numberOfChildrenExpanded++;
         return children[childToExpand];
     }
 
     public MCTSNode selectBestChild() {
-        double bestScore = children[0].calculateChild();
-        int bestIndex = 0;
+        return selectBestChildFeaturingEnemyMove(selectBestOpposingAction());
+    }
 
-        for (int i = 1; i < numberOfChildrenExpanded; i++) {
-            double childScore = children[i].calculateChild();
-            if (childScore > bestScore) {
-                bestScore = childScore;
+    public Action selectBestOpposingAction() {
+        double bestScore = children[0].enemyTotalValue;
+        int bestIndex = 0;
+        for (int i = 1; i < children.length; i++) {
+            double score = children[i].enemyTotalValue;
+            if (score > bestScore) {
+                bestScore = score;
                 bestIndex = i;
+            }
+        }
+        return children[bestIndex].enemyMoveToThisState;
+    }
+
+    public MCTSNode selectBestChildFeaturingEnemyMove(Action enemyMove) {
+        double bestScore = -Double.MAX_VALUE;
+        int bestIndex = -1;
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].enemyMoveToThisState == enemyMove) {
+                double score = children[i].calculateChild();
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestIndex = i;
+                }
             }
         }
         return children[bestIndex];
@@ -147,7 +167,7 @@ public class MCTSNode {
     }
 
     private boolean fullyExpanded() {
-        return numberOfChildrenExpanded == allActions.length;
+        return numberOfChildrenExpanded == allActionPairs.length;
     }
 
 }
