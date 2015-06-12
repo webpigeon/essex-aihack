@@ -2,6 +2,12 @@ package battle.controllers.Memo;
 
 import math.Vector2d;
 import asteroids.Action;
+import battle.BattleMissile;
+import battle.NeuroShip;
+import battle.SimpleBattle;
+import asteroids.Missile;
+import java.util.ArrayList;
+import asteroids.GameObject;
 
 /**
  * Created by Memo Akten on 11/06/2015.
@@ -33,6 +39,23 @@ public class MemoControllerUtils {
             action.turn = lookAt(s, d, desired_pos, rot_threshold);
             return false;
         }
+    }
+
+    // from Daniel
+    ArrayList<Missile> getMissiles(SimpleBattle gstate)
+    {
+        ArrayList<GameObject> O = gstate.getObjects();
+        ArrayList<Missile> M = new ArrayList<Missile>();
+
+        for( GameObject go : O )
+        {
+            if( go instanceof Missile )
+            {
+                M.add((Missile)go);
+            }
+        }
+
+        return M;
     }
 
 }
