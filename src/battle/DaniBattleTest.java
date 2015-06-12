@@ -6,7 +6,10 @@ import asteroids.Action;
 import battle.controllers.EmptyController;
 import battle.controllers.FireController;
 import battle.controllers.RotateAndShoot;
-import battle.controllers.DaniController;
+import battle.controllers.Dani.DaniController;
+import battle.controllers.Memo.MemoController1;
+import battle.controllers.Memo.MemoControllerRandom;
+import battle.controllers.mmmcts.MMMCTS;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
@@ -21,7 +24,9 @@ public class DaniBattleTest {
         SimpleBattle battle = new SimpleBattle();
 
         BattleController fire1 = new DaniController();
-        BattleController fire2 = new RotateAndShoot();
+        //BattleController fire2 = new MemoControllerRandom();
+        BattleController fire2 = new MMMCTS();
+        //BattleController fire2 = new MemoController1();
 
         battle.playGame(fire1, fire2);
     }
