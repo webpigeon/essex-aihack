@@ -24,19 +24,21 @@ public class MemoController1 implements RenderableBattleController {
     public double DIST_TO_TARGET_THRESH = 40;
     public double ROT_TO_TARGET_THRESH = 5 * Math.PI / 180.0;
 
-    public double ATTACK_PROB = 0.0;
+    public double ATTACK_PROB = 0.5;
     public double ATTACK_SHOOT_PROB = 0.5;
     public double ATTACK_THRUST_PROB = 0.00;
     public double ATTACK_ROT_THRESH = 5 * Math.PI / 180.0;
 
     public double CHASE_SHOOT_PROB = 0.1;
     public double CHASE_THRUST_PROB = 0.3;
+    public double CHASE_DOT_THRESH = 0.9;
 
     Action action;
     double desired_dist_to_ship = 0;
-    Vector2d desired_pos = new Vector2d();
-    Vector2d vec_to_desired_pos = new Vector2d();
-    Vector2d target_pos = new Vector2d();
+    Vector2d desired_pos = new Vector2d(true);
+    Vector2d vec_to_desired_pos = new Vector2d(true);
+    Vector2d target_pos = new Vector2d(true);
+
 
     public MemoController1() {
         action = new Action();
@@ -56,32 +58,32 @@ public class MemoController1 implements RenderableBattleController {
         if(Math.random() < ATTACK_PROB) {
             do_attack = true;
         } else {
+            // pick desired distance to ship
             if(desired_dist_to_ship == 0 || Math.random() < DESIRED_DIST_CHANGE_PROB) {
                 desired_dist_to_ship = Math.random() * (DESIRED_DIST_TO_SHIP_MAX - DESIRED_DIST_TO_SHIP_MIN) + DESIRED_DIST_TO_SHIP_MIN;
             }
 
-            // position
-            desired_pos = otherShip.s.copy();
-            desired_pos.add(otherShip.d, -desired_dist_to_ship);
+            // set desired position behind enemy ship
+            desired_pos = Vector2d.add(otherShip.s, otherShip.d, -desired_dist_to_ship);
+            vec_to_desired_pos = Vector2d.subtract(desired_pos, thisShip.s);
 
-            vec_to_desired_pos = desired_pos.copy();
-            vec_to_desired_pos.add(thisShip.s, -1);
-
-            // goto target pos
+            // goto desired pos
             boolean reached_desired_pos = MemoControllerUtils.thrustTo(thisShip.s, thisShip.d, desired_pos, DIST_TO_TARGET_THRESH, ROT_TO_TARGET_THRESH, action);
 
+            // attack if we're there
             if(reached_desired_pos) {
                 do_attack = true;
             } else {
-                // add randomness
-                action.thrust = Math.random() < CHASE_THRUST_PROB ? 1 : 0;
-
+                // otherwise thrust (random)
+                if(Vector2d.scalarProduct(thisShip.d, Vector2d.normalise(vec_to_desired_pos)) > CHASE_DOT_THRESH) {
+                    action.thrust = Math.random() < CHASE_THRUST_PROB ? 1 : 0;
+                }
             }
         }
 
         if(do_attack) {
             action.thrust = Math.random() < ATTACK_THRUST_PROB ? 1 : 0;
-            target_pos = otherShip.s.copy(); // TODO, include velocity vector in target pos
+            target_pos = new Vector2d(otherShip.s, true); // TODO, include velocity vector in target pos
             action.turn = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
             action.shoot = action.turn == 0 ? Math.random() < ATTACK_SHOOT_PROB : false;
         }

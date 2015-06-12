@@ -14,7 +14,7 @@ import battle.controllers.Memo.MemoControllerUtils;
  * Created by Memo Akten on 11/06/15.
  */
 public class MemoControllerRandom implements BattleController {
-    public double MULT = 0.01;
+    public double MULT = 1.0;
 
     public double ATTACK_PROB = 0.2 * MULT;
     public double ATTACK_SHOOT_PROB = 0.5 * MULT;
