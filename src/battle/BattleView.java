@@ -42,6 +42,15 @@ public class BattleView extends JComponent {
         AffineTransform at = g.getTransform();
         g.translate((1 - viewScale) * width / 2, (1-viewScale)*height / 2);
 
+        if (game.p1 instanceof RenderableBattleController) {
+            RenderableBattleController rbc = (RenderableBattleController)game.p1;
+            rbc.render(gx);
+        }
+
+        if (game.p2 instanceof RenderableBattleController) {
+            RenderableBattleController rbc = (RenderableBattleController)game.p1;
+            rbc.render(gx);
+        }
 
         // this was an experiment to turn it into a side-scroller
         // but it produces a weird moving screen effect
