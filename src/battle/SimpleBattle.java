@@ -4,6 +4,7 @@ import asteroids.*;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.awt.*;
 
@@ -55,6 +56,10 @@ public class SimpleBattle {
         }
     }
 
+    public int getTicks() {
+        return currentTick;
+    }
+
     public int playGame(BattleController p1, BattleController p2) {
         this.p1 = p1;
         this.p2 = p2;
@@ -63,19 +68,41 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
+        if (p1 instanceof KeyListener) {
+            view.addKeyListener((KeyListener)p1);
+            view.setFocusable(true);
+            view.requestFocus();
+        }
+
+        if (p2 instanceof KeyListener) {
+            view.addKeyListener((KeyListener)p2);
+            view.setFocusable(true);
+            view.requestFocus();
+        }
+
         while (!isGameOver()) {
             update();
+        }
+
+        if (p1 instanceof KeyListener) {
+            view.removeKeyListener((KeyListener)p1);
+        }
+        if (p2 instanceof KeyListener) {
+            view.removeKeyListener((KeyListener)p2);
         }
 
         return 0;
     }
 
-    protected void reset() {
+    public void reset() {
         stats.clear();
         objects.clear();
-        s1 = buildShip(250, 250, 0);
-        s2 = buildShip(300, 300, 1);
+        s1 = buildShip(100, 250, 0);
+        s2 = buildShip(500, 250, 1);
         this.currentTick = 0;
+
+        stats.add(new PlayerStats(0, 0));
+        stats.add(new PlayerStats(0, 0));
     }
 
     protected NeuroShip buildShip(int x, int y, int playerID) {
@@ -177,6 +204,8 @@ public class SimpleBattle {
                     int playerID = (actor == s1 ? 1 : 0);
                     PlayerStats stats = this.stats.get(playerID);
                     stats.nPoints += pointsPerKill;
+
+                    ob.hit();
                     return;
                 }
             }
