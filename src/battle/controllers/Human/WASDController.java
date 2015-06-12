@@ -12,7 +12,7 @@ import java.awt.event.KeyListener;
  */
 public class WASDController implements BattleController, KeyListener {
     public static final Action FORWARD = new Action(1, 0, false);
-    public static final Action LEFT = new Action(0, 1, false);
+    public static final Action LEFT = new Action(0, -1, false);
     public static final Action RIGHT = new Action(0, 1, false);
     public static final Action FIRE = new Action(0, 0, true);
     public static final Action NOOP = new Action(0, 0, false);
@@ -25,7 +25,9 @@ public class WASDController implements BattleController, KeyListener {
             return NOOP;
         }
 
-        return currentAction;
+        Action lastAction = currentAction;
+        currentAction = null;
+        return lastAction;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class WASDController implements BattleController, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
                 currentAction = FORWARD;

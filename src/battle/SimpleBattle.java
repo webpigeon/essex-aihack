@@ -70,9 +70,14 @@ public class SimpleBattle {
 
         if (p1 instanceof KeyListener) {
             view.addKeyListener((KeyListener)p1);
+            view.setFocusable(true);
+            view.requestFocus();
         }
+
         if (p2 instanceof KeyListener) {
             view.addKeyListener((KeyListener)p2);
+            view.setFocusable(true);
+            view.requestFocus();
         }
 
         while (!isGameOver()) {
