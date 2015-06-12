@@ -122,12 +122,12 @@ public class MCTSNode {
         // can we shoot
         NeuroShip p1 = state.getShip(playerID);
         NeuroShip p2 = state.getShip(playerID == 0 ? 1 : 0);
-        double p1Seesp2 = p1.d.dot(p2.s);
+        double p1Seesp2 = p1.s.dist(p2.s);
 
-        double p2Seesp1 = p2.d.dot(p1.s);
+        double p2Seesp1 = p2.s.dist(p1.s);
 
-        boolean canP1SeeP2 = (p1Seesp2 < 0);
-        boolean canP2SeeP1 = (p2Seesp1 < 0);
+        boolean canP1SeeP2 = (p1Seesp2 < 100);
+        boolean canP2SeeP1 = (p2Seesp1 < 100);
         Action[][] childPossibleActions = allActionPairs;
 
         if (canP1SeeP2 && !canP2SeeP1) {
