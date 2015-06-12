@@ -55,6 +55,10 @@ public class SimpleBattle {
         }
     }
 
+    public int getTicks() {
+        return currentTick;
+    }
+
     public int playGame(BattleController p1, BattleController p2) {
         this.p1 = p1;
         this.p2 = p2;
