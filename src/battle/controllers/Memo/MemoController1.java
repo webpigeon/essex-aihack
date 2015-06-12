@@ -36,6 +36,7 @@ public class MemoController1 implements RenderableBattleController {
     public double MISSILE_AVOID_PROB = 0.2;
 
     public double SHOOT_DIST_THRESH = 1000;
+    public int TICK_STEP = 1;
 
     Action action;
     double desired_dist_to_enemy = 0;
@@ -56,6 +57,12 @@ public class MemoController1 implements RenderableBattleController {
 
     @Override
     public Action getAction(SimpleBattle gs, int playerId) {
+        if(TICK_STEP < 1) TICK_STEP = 1;
+
+        if(TICK_STEP > 1) {
+            if(gs.getTicks() % TICK_STEP != 0) return action;
+        }
+
         NeuroShip thisShip = gs.getShip(playerId);
         NeuroShip otherShip = gs.getShip(1 - playerId);
 
@@ -122,20 +129,28 @@ public class MemoController1 implements RenderableBattleController {
 
 
         if(Math.random() < MISSILE_AVOID_PROB) {
-            ArrayList<Missile> missiles = new ArrayList<Missile>();
+           // ArrayList<Missile> missiles = new ArrayList<Missile>();
+            Vector2d avg_missile_pos = new Vector2d(true);
+            int num_missiles = 0;
+
+            // look for missiles nearby
             for (GameObject go : gs.getObjects()) {
                 if (go instanceof Missile) {
                     if (go.s.dist(thisShip.s) < MISSILE_AVOID_DIST) {
-                        missiles.add((Missile) go);
+                        //missiles.add((Missile) go);
+                        num_missiles++;
+                        avg_missile_pos.add(go.s);
                     }
                 }
             }
 
             // very dumb
-            if(missiles.size() > 0) {
+            if(num_missiles > 0) {
+                avg_missile_pos.multiply(1.0/num_missiles);
                 do_avoid = true;
+                Vector2d vec_to_avg_missile_pos = Vector2d.subtract(avg_missile_pos, thisShip.s);
+                action.turn = Vector2d.crossMag(vec_to_avg_missile_pos, thisShip.s);
                 action.thrust = 1;
-                action.turn = -1;
             }
             //for(Missile m : missiles) {
 
