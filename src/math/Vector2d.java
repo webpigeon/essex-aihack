@@ -430,11 +430,14 @@ public class Vector2d {
         return ((x * v.getX()) + (y * v.getY()));
     }
 
-    public static Vector2d scalarProduct(Vector2d v1, Vector2d v2) {
+    public static double scalarProduct(Vector2d v1, Vector2d v2) {
         Vector2d vector = new Vector2d(v1, true);
-        vector.scalarProduct(v2);
-        return vector;
+        return vector.scalarProduct(v2);
     }
+
+    public double dot(Vector2d v) { return scalarProduct(v); }
+
+    public static double dot(Vector2d v1, Vector2d v2) { return Vector2d.scalarProduct(v1, v2); }
 
     public static Vector2d toCartesian(Vector2d input) {
         double x = (input.getY() * Math.cos(input.getR()));
@@ -490,10 +493,10 @@ public class Vector2d {
     }
 
     public static Vector2d normalise(Vector2d first) {
-        Vector2d second = new Vector2d(first, false);
+        Vector2d second = new Vector2d(first, true);
         second.normalise();
-        if (first.mutable)
-            second.setToMutable();
+       // if (first.mutable)
+       //     second.setToMutable();
         return second;
     }
 
