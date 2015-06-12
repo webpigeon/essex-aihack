@@ -4,6 +4,7 @@ import asteroids.*;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.awt.*;
 
@@ -55,13 +56,34 @@ public class SimpleBattle {
         }
     }
 
+    public int getTicks() {
+        return currentTick;
+    }
+
     public int playGame(BattleController p1, BattleController p2) {
         this.p1 = p1;
         this.p2 = p2;
         reset();
 
+        stats.add(new PlayerStats(0, 0));
+        stats.add(new PlayerStats(0, 0));
+
+        if (p1 instanceof KeyListener) {
+            view.addKeyListener((KeyListener)p1);
+        }
+        if (p2 instanceof KeyListener) {
+            view.addKeyListener((KeyListener)p2);
+        }
+
         while (!isGameOver()) {
             update();
+        }
+
+        if (p1 instanceof KeyListener) {
+            view.removeKeyListener((KeyListener)p1);
+        }
+        if (p2 instanceof KeyListener) {
+            view.removeKeyListener((KeyListener)p2);
         }
 
         return 0;
@@ -79,9 +101,9 @@ public class SimpleBattle {
     }
 
     protected NeuroShip buildShip(int x, int y, int playerID) {
-        Vector2d position = new Vector2d(x, y);
-        Vector2d speed = new Vector2d();
-        Vector2d direction = new Vector2d(1, 0);
+        Vector2d position = new Vector2d(x, y, true);
+        Vector2d speed = new Vector2d(true);
+        Vector2d direction = new Vector2d(1, 0, true);
 
         return new NeuroShip(position, speed, direction, playerID );
     }
@@ -177,6 +199,8 @@ public class SimpleBattle {
                     int playerID = (actor == s1 ? 1 : 0);
                     PlayerStats stats = this.stats.get(playerID);
                     stats.nPoints += pointsPerKill;
+
+                    ob.hit();
                     return;
                 }
             }
@@ -206,7 +230,7 @@ public class SimpleBattle {
         NeuroShip currentShip = playerId == 0 ? s1 : s2;
         PlayerStats stats = this.stats.get(playerId);
         if (stats.nMissiles < nMissiles) {
-            Missile m = new Missile(s, new Vector2d(0, 0));
+            Missile m = new Missile(s, new Vector2d(0, 0, true));
             m.v.add(d, releaseVelocity);
             // make it clear the ship
             m.s.add(m.v, (currentShip.r() + missileRadius) * 1.5 / m.v.mag());
