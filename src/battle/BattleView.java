@@ -74,9 +74,13 @@ public class BattleView extends JComponent {
         String strScores    = "Score:    " + p1Stats.getPoints() + " | " + p2Stats.getPoints();
         String strMissiles  = "Missiles: " + p1Stats.getMissilesFired() + " | " + p2Stats.getMissilesFired();
         String strTicks     = "Ticks:    " + game.currentTick;
+        String p1 = "P1 Green " + game.p1.getClass().getSimpleName();
+        String p2 = "P2 Blue " + game.p2.getClass().getSimpleName();
         g.drawString(strScores, 10, 20);
         g.drawString(strMissiles, 10, 50);
         g.drawString(strTicks, 10, 80);
+        g.drawString(p1, 10, 110);
+        g.drawString(p2, 10, 140);
     }
 
 
