@@ -97,8 +97,8 @@ public class SimpleBattle {
     public void reset() {
         stats.clear();
         objects.clear();
-        s1 = buildShip(250, 250, 0);
-        s2 = buildShip(300, 300, 1);
+        s1 = buildShip(100, 250, 0);
+        s2 = buildShip(500, 250, 1);
         this.currentTick = 0;
 
         stats.add(new PlayerStats(0, 0));
