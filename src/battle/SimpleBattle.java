@@ -177,6 +177,7 @@ public class SimpleBattle {
                     int playerID = (actor == s1 ? 1 : 0);
                     PlayerStats stats = this.stats.get(playerID);
                     stats.nPoints += pointsPerKill;
+                    ob.hit();
                     return;
                 }
             }
