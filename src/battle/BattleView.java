@@ -42,7 +42,6 @@ public class BattleView extends JComponent {
         AffineTransform at = g.getTransform();
         g.translate((1 - viewScale) * width / 2, (1-viewScale)*height / 2);
 
-
         // this was an experiment to turn it into a side-scroller
         // but it produces a weird moving screen effect
         // needs more logic in the drawing process

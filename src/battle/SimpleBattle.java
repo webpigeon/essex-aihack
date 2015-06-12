@@ -234,7 +234,16 @@ public class SimpleBattle {
         }
 
         s1.draw(g);
+        if (p1 instanceof RenderableBattleController) {
+            RenderableBattleController rbc = (RenderableBattleController)p1;
+            rbc.render(g, s1.copy());
+        }
+
         s2.draw(g);
+        if (p2 instanceof RenderableBattleController) {
+            RenderableBattleController rbc = (RenderableBattleController)p2;
+            rbc.render(g, s2.copy());
+        }
     }
 
     public NeuroShip getShip(int playerID) {
