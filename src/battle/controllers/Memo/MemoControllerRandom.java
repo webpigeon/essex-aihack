@@ -30,7 +30,7 @@ public class MemoControllerRandom implements BattleController {
     public double FLEE_TURN_LEFT_PROB = 0.3333 * MULT;
     public double FLEE_TURN_RIGHT_PROB = 0.3333 * MULT;
 
-    public double SHOOT_DIST_THRESH = 200;
+    public double SHOOT_DIST_THRESH = 300;
     Action action;
 
     public MemoControllerRandom() {

@@ -40,22 +40,4 @@ public class MemoControllerUtils {
             return false;
         }
     }
-
-    // from Daniel
-    ArrayList<Missile> getMissiles(SimpleBattle gstate)
-    {
-        ArrayList<GameObject> O = gstate.getObjects();
-        ArrayList<Missile> M = new ArrayList<Missile>();
-
-        for( GameObject go : O )
-        {
-            if( go instanceof Missile )
-            {
-                M.add((Missile)go);
-            }
-        }
-
-        return M;
-    }
-
 }
