@@ -4,6 +4,7 @@ import asteroids.*;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.awt.*;
 
@@ -67,8 +68,22 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
+        if (p1 instanceof KeyListener) {
+            view.addKeyListener((KeyListener)p1);
+        }
+        if (p2 instanceof KeyListener) {
+            view.addKeyListener((KeyListener)p2);
+        }
+
         while (!isGameOver()) {
             update();
+        }
+
+        if (p1 instanceof KeyListener) {
+            view.removeKeyListener((KeyListener)p1);
+        }
+        if (p2 instanceof KeyListener) {
+            view.removeKeyListener((KeyListener)p2);
         }
 
         return 0;
@@ -181,6 +196,8 @@ public class SimpleBattle {
                     int playerID = (actor == s1 ? 1 : 0);
                     PlayerStats stats = this.stats.get(playerID);
                     stats.nPoints += pointsPerKill;
+
+                    ob.hit();
                     return;
                 }
             }
