@@ -13,21 +13,20 @@ public class PiersMCTS implements BattleController {
 
     public PiersMCTS() {
         MCTSNode.setAllActions();
+        BetterMCTSNode.setAllActions();
     }
 
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
-        MCTSNode root = new MCTSNode(2.0, playerId);
+        BetterMCTSNode root = new BetterMCTSNode(2.0, playerId);
         GameTimer timer = new GameTimer();
         timer.setTimeBudgetMilliseconds(40);
         int i = 0;
         while (timer.remainingTimePercent() > 10) {
-//            System.out.println("Running");
             SimpleBattle copy = gameStateCopy.clone();
-            MCTSNode travel = root.select(copy, 3);
-            double[] results = travel.rollout(copy, 100);
-//            System.out.println(Arrays.toString(results));
-            travel.updateValues(results[0], results[1]);
+            BetterMCTSNode travel = root.select(copy, 5);
+            double result = travel.rollout(copy, 50);
+            travel.updateValues(result);
             i++;
         }
 
