@@ -19,7 +19,7 @@ public class StaticEvolver {
 
     public StaticEvolver(SimpleBattle battle) {
         this.eval = new GameEvaluator(battle, true);
-        this.rch = new SimpleRandomHillClimberEngine(new double[]{0}, eval);
+        this.rch = new SimpleRandomHillClimberEngine(new double[]{2.7631328506251744, 0.746687716615824, 0.11574670823251669}, eval);
     }
 
     public double[] getBest() {
@@ -27,7 +27,7 @@ public class StaticEvolver {
     }
 
     public static void main(String[] args) {
-        SimpleBattle start = new SimpleBattle();
+        SimpleBattle start = new SimpleBattle(false);
         start.reset();
 
         StaticEvolver evo = new StaticEvolver(start);

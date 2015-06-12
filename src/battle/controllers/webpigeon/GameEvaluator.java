@@ -23,17 +23,18 @@ public class GameEvaluator implements Eval2 {
         SimpleBattle currBattle = battle.clone();
         currBattle.reset();
 
-        GaController controller1 = new GaController(a);
-        GaController controller2 = new GaController(b);
+        StupidGAWrapper controller1 = new StupidGAWrapper(a);
+        StupidGAWrapper controller2 = new StupidGAWrapper(b);
 
-        while(!battle.isGameOver()) {
+        int tick = 0;
+        while(!currBattle.isGameOver()) {
             Action action1 = controller1.getMove();
             Action action2 = controller2.getMove();
 
             currBattle.update(action1, action2);
         }
 
-        return 0;
+        return currBattle.getPoints(0) - currBattle.getPoints(1);
     }
 
 }
