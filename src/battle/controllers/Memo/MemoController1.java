@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * Created by Memo Akten on 11/06/15.
  */
 public class MemoController1 implements RenderableBattleController {
-    public double DESIRED_DIST_TO_ENEMY_MIN = 50;
+    public double DESIRED_DIST_TO_ENEMY_MIN = 100;
     public double DESIRED_DIST_TO_ENEMY_MAX = 300;
     public double DESIRED_ROT_OFF_ENEMY = 00 * Math.PI / 180.0; // how many radians variance (+-) in axis off enemies back
     public double DESIRED_POS_CHANGE_PROB = 0.005;  //probability of picking new position to goto
@@ -45,9 +45,10 @@ public class MemoController1 implements RenderableBattleController {
     Vector2d vec_to_desired_pos = new Vector2d(true);
     Vector2d target_pos = new Vector2d(true);
 
-    boolean do_attack = false;
-    boolean do_chase = false;
-    boolean do_avoid = false;
+    boolean do_attack = false;  // turn and attack
+    boolean do_chase = false;   // go behind
+    boolean do_avoid = false;   // avoid missiles
+    boolean do_chicken = false; // go to edge and hide
 
     public MemoController1() {
         action = new Action();
@@ -113,6 +114,12 @@ public class MemoController1 implements RenderableBattleController {
             action.shoot = false;
         }
 
+        do_chicken = gs.getMissilesLeft(playerId) == 0;
+        if(do_chicken) {
+            MemoControllerUtils.thrustTo(thisShip.s, thisShip.d, new Vector2d(0, 0), desired_pos_radius, ROT_TO_TARGET_THRESH, action);
+            action.thrust = 1;
+        }
+
 
         if(Math.random() < MISSILE_AVOID_PROB) {
             ArrayList<Missile> missiles = new ArrayList<Missile>();
@@ -158,6 +165,12 @@ public class MemoController1 implements RenderableBattleController {
         if(do_avoid) {
             g.setColor(Color.green);
             int r = (int)MISSILE_AVOID_DIST;
+            g.drawOval((int) (s.s.x) - r, (int) (s.s.y) - r, r * 2, r * 2);
+        }
+
+        if(do_chicken) {
+            g.setColor(Color.pink);
+            int r = 50;
             g.drawOval((int) (s.s.x) - r, (int) (s.s.y) - r, r * 2, r * 2);
         }
 
