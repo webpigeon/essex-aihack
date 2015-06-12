@@ -25,9 +25,10 @@ public class NeuroShip extends GameObject {
 
     // define how quickly the ship will rotate
     static double steerStep = 10 * Math.PI / 180;
+    static double maxSpeed = 3;
 
     // this is the friction that makes the ship slow down over time
-    static double loss = 0.995;
+    static double loss = 0.99;
 
     double releaseVelocity = 0;
     double minVelocity = 2;
@@ -109,7 +110,14 @@ public class NeuroShip extends GameObject {
         v.y += gravity;
         // v.x = 0.5;
         v.mul(loss);
+
+        // This is fairly basic, but it'll do for now...
+        v.x = clamp(v.x, -maxSpeed, maxSpeed);
+        v.y = clamp(v.y, -maxSpeed, maxSpeed);
+
         s.add(v);
+
+        System.out.println(v);
 
         return this;
     }
