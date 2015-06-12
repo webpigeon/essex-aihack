@@ -50,16 +50,6 @@ public class BattleView extends JComponent {
 
         g.scale(viewScale, viewScale);
 
-        if (game.p1 instanceof RenderableBattleController) {
-            RenderableBattleController rbc = (RenderableBattleController)game.p1;
-            rbc.render(gx);
-        }
-
-        if (game.p2 instanceof RenderableBattleController) {
-            RenderableBattleController rbc = (RenderableBattleController)game.p1;
-            rbc.render(gx);
-        }
-
         game.draw(g);
         g.setTransform(at);
         paintState(g);
