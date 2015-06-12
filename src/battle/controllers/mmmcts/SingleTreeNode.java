@@ -233,14 +233,20 @@ public class SingleTreeNode
             score += HUGE_POSITIVE;
         }
 
+        int mleft = Math.abs(a_gameState.getMissilesLeft(playerId));
         double dist = s1.s.dist(s2.s);
-        score += 10*(297 - dist);
+
+        if(mleft > 0) {
+            score += 25 * mleft;
+
+            score += 6 * (297 - dist);
+        } else {
+            score += dist * 6;
+        }
 
         //double alpha = 180 + Math.atan2((s1.s.y - s2.s.y), (s1.s.x - s2.s.x));
         //score += 10 * alpha;
 
-        int mleft = Math.abs(a_gameState.getMissilesLeft(playerId));
-        score += 20 * mleft;
 
         //System.out.println("SCORE - " + score);
 
