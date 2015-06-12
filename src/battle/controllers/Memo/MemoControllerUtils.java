@@ -10,7 +10,8 @@ public class MemoControllerUtils {
 
     // returns turn value (-1, 0, 1)
     static double lookAt(Vector2d s, Vector2d d, Vector2d lookat, double rot_threshold) {
-        Vector2d desired_rot_vec = lookat.copy();
+        Vector2d desired_rot_vec = new Vector2d(lookat, true);
+
         desired_rot_vec.add(s, -1);
 
         double current_rot = Math.atan2(d.y, d.x);
