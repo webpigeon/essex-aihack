@@ -15,6 +15,12 @@ import java.util.ArrayList;
 /**
  * Created by Memo Akten on 11/06/15.
  */
+
+
+/*
+Evolved:
+[0.2778726792239472, 0.5444174871655298, -0.18302984419042218, 4.9674545803614985, 0.774151581822357, -0.06817898591746861, 0.4337294770803466, 0.053651332141001, 0.6368934200933084, 0.2436632757426203, 0.4366302426536873, 0.8966473590665536, 0.15787122214317573, 0.23265484452056812, 1.789757691310432, 0.03479481858967811
+ */
 public class MemoController1 implements RenderableBattleController {
     static final public double DIST_RANGE = 500;   // used for normalizing distances
     static final public double TICK_RANGE = 10;     // used for normalizing tick
