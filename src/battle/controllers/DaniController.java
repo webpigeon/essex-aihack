@@ -5,7 +5,7 @@ import asteroids.Controller;
 import asteroids.GameState;
 import asteroids.GameObject;
 import asteroids.Ship;
-import battle.BattleController;
+import battle.RenderableBattleController;
 import battle.BattleMissile;
 import battle.NeuroShip;
 import battle.SimpleBattle;
@@ -19,7 +19,7 @@ import java.awt.geom.AffineTransform;
 /**
  * Created by simonlucas on 30/05/15.
  */
-public class DaniController implements BattleController
+public class DaniController implements RenderableBattleController
 {
 
     Action action;
@@ -31,6 +31,9 @@ public class DaniController implements BattleController
     Vector2d posSum;
     Vector2d dirSum;
     boolean anyMissiles = false;
+
+    Vector2d targetPosition;
+    Vector2d targetDirection;
 
     public DaniController()
 
@@ -61,7 +64,7 @@ public class DaniController implements BattleController
         Vector2d tp = new Vector2d();
         // Now tell me how to write this in one line in Java with vectors xcxicwerwx
         // Porco dio porca madonna tutti gli angeli in colonna
-        Vector2d d = new Vector2d(ship.d);
+        Vector2d d = new Vector2d(ship.d, true);
         d.normalise();;
         tp.x = thisPos.x + d.x * l;
         tp.y = thisPos.y + d.y * l;
@@ -100,9 +103,8 @@ public class DaniController implements BattleController
 
     Vector2d  closestPointOnSegment( Vector2d p, Vector2d a, Vector2d b )
     {
-        Vector2d v = subtract(b,a);
-        Vector2d w = subtract(p,a);
-
+        Vector2d v = Vector2d.subtract(b, a);
+        Vector2d w = Vector2d.subtract(p, a);
 
         double d1 = dot(w,v);
         if( d1 <= 0.0 )
@@ -112,7 +114,7 @@ public class DaniController implements BattleController
             return b;
 
         double t = d1/d2;
-        return a + v.mul(t);
+        return Vector2d.add(a, Vector2d.multiply(v, t));
     }
 
     double           distanceToSegment( Vector2d p, Vector2d a, Vector2d b )
@@ -139,8 +141,8 @@ public class DaniController implements BattleController
         double rot = angleBetween(ship.d, d)*rotAmt;
 
         ArrayList<Missile> M = getMissiles(gstate);
-        posSum = new Vector2d(0,0);
-        dirSum = new Vector2d(0,0);
+        posSum = new Vector2d(0,0, true);
+        dirSum = new Vector2d(0,0, true);
         int c = 0;
         for(Missile m : M)
         {
@@ -148,16 +150,18 @@ public class DaniController implements BattleController
             dirSum.add(m.v);
             c++;
         }
-        dirSum.normalise();
+
         if(c!=0)
         {
             //System.out.println("Missiles: " + c);
-            posSum.mul(1.0 / c);
+            dirSum.normalise();
+            posSum.multiply(1.0 / c);
             anyMissiles = true;
         }
         else
         {
             anyMissiles = false;
+            System.out.println("No missiles");
         }
 
         if(inView(ship, enemy) && shotWait <= 0)
@@ -182,7 +186,7 @@ public class DaniController implements BattleController
     }
 
     @Override
-    public void draw( Graphics2D g )
+    public void render( Graphics2D g, NeuroShip s )
     {
         AffineTransform at = g.getTransform();
 
