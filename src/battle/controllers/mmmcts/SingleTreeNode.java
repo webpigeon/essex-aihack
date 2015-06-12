@@ -215,6 +215,12 @@ public class SingleTreeNode
         return delta;
     }
 
+    public static int SCORE_BONUS = 300;
+    public static int MISSILES_LEFT_MOD = 10;
+    public static int DISTANCE_MOD = 12;
+    public static int GRAVITATE_DISTANCE = 40;
+    public static boolean GRAVITATE = false;
+
     public double value(SimpleBattle a_gameState, int playerId) {
 
         //double score = OGState.getPoints(playerId);
@@ -231,7 +237,7 @@ public class SingleTreeNode
 
         if(a_gameState.getPoints(playerId) > OGState.getPoints(playerId)) {
             //score += HUGE_POSITIVE;
-            score += 100;
+            score += SCORE_BONUS;
         }
 
         int mleft =  Math.abs(a_gameState.getMissilesLeft(playerId));
@@ -240,13 +246,15 @@ public class SingleTreeNode
 
         if(mleft > 0) {
             //score -= 2000 * mused;
-            score += 10 * mleft;
+            score += MISSILES_LEFT_MOD * mleft;
 
             //int gravitateTowards = 100;
-            //score += 10 * -Math.abs(gravitateTowards - dist);
-            score += -dist * 6;
+            if(GRAVITATE)
+                score += DISTANCE_MOD * -Math.abs(GRAVITATE_DISTANCE - dist);
+            else
+                score += -dist * DISTANCE_MOD;
         } else {
-            score += dist * 6;
+            score += dist * DISTANCE_MOD;
         }
 
         //double alpha = 180 + Math.atan2((s1.s.y - s2.s.y), (s1.s.x - s2.s.x));
