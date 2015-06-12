@@ -77,7 +77,7 @@ public class MemoControllerRandom implements BattleController {
             action.shoot = Math.random() < ATTACK_SHOOT_PROB;
 
             // TODO, include velocity vector in target pos
-            action.turn = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
+            MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH, action);
         } else{
             action.thrust = Math.random() < FLEE_THRUST_PROB ? 1 : 0;
             action.shoot = Math.random() < FLEE_SHOOT_PROB;

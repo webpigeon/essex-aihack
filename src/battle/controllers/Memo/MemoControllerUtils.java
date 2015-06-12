@@ -14,20 +14,19 @@ import asteroids.GameObject;
  */
 public class MemoControllerUtils {
 
-    // returns turn value (-1, 0, 1)
-    static double lookAt(Vector2d s, Vector2d d, Vector2d lookat, double rot_threshold) {
+    // fills in Action with turn, returns whether we or not we've reached target
+    static boolean lookAt(Vector2d s, Vector2d d, Vector2d lookat, double rot_threshold, Action action) {
         Vector2d desired_rot_vec = new Vector2d(lookat, true);
 
         desired_rot_vec.add(s, -1);
 
         double current_rot = Math.atan2(d.y, d.x);
         double target_rot = Math.atan2(desired_rot_vec.y, desired_rot_vec.x);
-        if(Math.abs(current_rot - target_rot) < rot_threshold) {
-            return 0;
-        } else {
-            if(current_rot > target_rot) return -1;
-            else return 1;
-        }
+
+        if(current_rot > target_rot) action.turn = -1;
+        else action.turn = 1;
+
+        return Math.abs(current_rot - target_rot) < rot_threshold;
     }
 
     // fills in Action with turn, returns whether we or not we've reached target
@@ -36,7 +35,7 @@ public class MemoControllerUtils {
         if(dist_to_desired_pos < dist_threshold) {
             return true;
         } else {
-            action.turn = lookAt(s, d, desired_pos, rot_threshold);
+            lookAt(s, d, desired_pos, rot_threshold, action);
             return false;
         }
     }

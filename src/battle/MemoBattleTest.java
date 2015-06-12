@@ -16,7 +16,7 @@ public class MemoBattleTest {
         SimpleBattle battle = new SimpleBattle();
 
         BattleController player1 = new MemoController1();
-        BattleController player2 = new WASDController();
+        BattleController player2 = new MMMCTS();
         battle.playGame(player1, player2);
     }
 

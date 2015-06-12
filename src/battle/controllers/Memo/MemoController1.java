@@ -26,7 +26,7 @@ public class MemoController1 implements RenderableBattleController {
     public double ATTACK_PROB = 0.1;
     public double ATTACK_SHOOT_PROB = 0.3;
     public double ATTACK_THRUST_PROB = 0.00;
-    public double ATTACK_ROT_THRESH = 5 * Math.PI / 180.0;
+    public double ATTACK_ROT_THRESH = 45 * Math.PI / 180.0;
 
     public double CHASE_SHOOT_PROB = 0.1;
     public double CHASE_THRUST_PROB = 0.5;
@@ -109,8 +109,7 @@ public class MemoController1 implements RenderableBattleController {
 
             // TODO, include velocity vector in target pos
             target_pos = new Vector2d(otherShip.s, true);
-            action.turn = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH);
-            action.shoot = Math.random() < ATTACK_SHOOT_PROB;
+            action.shoot = MemoControllerUtils.lookAt(thisShip.s, thisShip.d, otherShip.s, ATTACK_ROT_THRESH, action) && (Math.random() < ATTACK_SHOOT_PROB);
         }
 
         if(thisShip.s.dist(otherShip.s) > SHOOT_DIST_THRESH) {
