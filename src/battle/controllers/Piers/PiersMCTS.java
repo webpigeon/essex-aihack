@@ -34,7 +34,7 @@ public class PiersMCTS implements BattleController {
 //        if(i % 100 == 0){
 //            root.printAllChildren();
 //        }
-        System.out.println("Rollouts achieved: " + i);
+//        System.out.println("Rollouts achieved: " + i);
 //        System.out.println("Best Action: " + root.getBestAction());
         return root.getBestAction();
     }
