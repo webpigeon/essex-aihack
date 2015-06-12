@@ -29,6 +29,8 @@ public class MemoControllerRandom implements BattleController {
     public double FLEE_TURN_PROB = 0.3 * MULT;
     public double FLEE_TURN_LEFT_PROB = 0.3333 * MULT;
     public double FLEE_TURN_RIGHT_PROB = 0.3333 * MULT;
+
+    public double SHOOT_DIST_THRESH = 200;
     Action action;
 
     public MemoControllerRandom() {
@@ -47,6 +49,7 @@ public class MemoControllerRandom implements BattleController {
         v[7] = FLEE_TURN_PROB;
         v[8] = FLEE_TURN_LEFT_PROB;
         v[9] = FLEE_TURN_RIGHT_PROB;
+        v[10] = SHOOT_DIST_THRESH;
         return v;
     }
 
@@ -61,6 +64,7 @@ public class MemoControllerRandom implements BattleController {
         FLEE_TURN_PROB = v[7];
         FLEE_TURN_LEFT_PROB = v[8];
         FLEE_TURN_RIGHT_PROB = v[9];
+        SHOOT_DIST_THRESH = v[10];
     }
 
     @Override
@@ -84,6 +88,10 @@ public class MemoControllerRandom implements BattleController {
                 else if (v > 1 - FLEE_TURN_RIGHT_PROB) action.turn = 1;
                 else action.turn = 0;
             }
+        }
+
+        if(thisShip.s.dist(otherShip.s) > SHOOT_DIST_THRESH) {
+            action.shoot = false;
         }
 
         return action;

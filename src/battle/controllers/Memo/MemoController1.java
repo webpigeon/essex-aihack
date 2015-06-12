@@ -1,9 +1,6 @@
 package battle.controllers.Memo;
 
-import asteroids.Action;
-import asteroids.Controller;
-import asteroids.GameState;
-import asteroids.Ship;
+import asteroids.*;
 import battle.BattleController;
 import battle.NeuroShip;
 import battle.RenderableBattleController;
@@ -13,6 +10,7 @@ import battle.controllers.Memo.MemoControllerUtils;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 /**
  * Created by Memo Akten on 11/06/15.
@@ -37,9 +35,12 @@ public class MemoController1 implements RenderableBattleController {
     public double MISSILE_AVOID_DIST = 100;
     public double MISSILE_AVOID_PROB = 0.5;
 
+    public double SHOOT_DIST_THRESH = 200;
+
     Action action;
     double desired_dist_to_enemy = 0;
     double desired_rot_off_enemy = 0;
+    double desired_pos_radius = 0;
     Vector2d desired_pos = new Vector2d(true);
     Vector2d vec_to_desired_pos = new Vector2d(true);
     Vector2d target_pos = new Vector2d(true);
@@ -57,8 +58,8 @@ public class MemoController1 implements RenderableBattleController {
         boolean do_attack = false;
 
         // so they are rendered offscreen
-        target_pos.set(-100, 100);
-        desired_pos.set(-100, 100);
+        target_pos.set(-1000, 1000);
+        desired_pos.set(-1000, 1000);
 
         // random probability of attacking
         if(Math.random() < ATTACK_PROB) {
@@ -68,6 +69,7 @@ public class MemoController1 implements RenderableBattleController {
             // pick desired distance to ship
             if(desired_dist_to_enemy == 0 || Math.random() < DESIRED_POS_CHANGE_PROB) {
                 desired_dist_to_enemy = Math.random() * (DESIRED_DIST_TO_ENEMY_MAX - DESIRED_DIST_TO_ENEMY_MIN) + DESIRED_DIST_TO_ENEMY_MIN;
+                desired_pos_radius = desired_dist_to_enemy;
                 desired_rot_off_enemy = (Math.random() - 0.5) * DESIRED_ROT_OFF_ENEMY * 2;
             }
 
@@ -101,16 +103,19 @@ public class MemoController1 implements RenderableBattleController {
             action.shoot = action.turn == 0 ? Math.random() < ATTACK_SHOOT_PROB : false;
         }
 
-
+        if(thisShip.s.dist(otherShip.s) > SHOOT_DIST_THRESH) {
+            action.shoot = false;
+        }
+        //ArrayList<Missile> getMissiles(SimpleBattle gstate)
 
         return action;
     }
 
     @Override
     public void render(Graphics2D g, NeuroShip s) {
-        int desired_pos_radius = (int)DIST_TO_TARGET_THRESH;
+        //int desired_pos_radius = (int)DIST_TO_TARGET_THRESH;
         g.setColor(Color.yellow);
-        g.drawOval((int)(desired_pos.x) - desired_pos_radius, (int)(desired_pos.y) - desired_pos_radius, desired_pos_radius * 2, desired_pos_radius * 2);
+        g.drawOval((int)(desired_pos.x - desired_pos_radius), (int)(desired_pos.y - desired_pos_radius), (int)desired_pos_radius * 2, (int)desired_pos_radius * 2);
 
        // System.out.println(desired_pos);
 
