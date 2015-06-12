@@ -439,6 +439,15 @@ public class Vector2d {
 
     public static double dot(Vector2d v1, Vector2d v2) { return Vector2d.scalarProduct(v1, v2); }
 
+    // returns the magnitude of the cross product
+    public double crossMag(Vector2d v1) {
+        return (x*v1.y) - (y*v1.x);
+    }
+
+    public static double crossMag(Vector2d v1, Vector2d v2) {
+        return v1.crossMag(v2);
+    }
+
     public static Vector2d toCartesian(Vector2d input) {
         double x = (input.getY() * Math.cos(input.getR()));
         double y = (input.getY() * Math.sin(input.getR()));
