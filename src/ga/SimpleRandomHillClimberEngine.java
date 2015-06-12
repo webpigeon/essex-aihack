@@ -3,7 +3,7 @@ package ga;
 import java.util.Arrays;
 import java.util.Random;
 
-public class SimpleRandomHillClimber {
+public class SimpleRandomHillClimberEngine {
 
     // Random mutation hill climber
     // using a relative (hence co-evolutionary)
@@ -31,7 +31,7 @@ public class SimpleRandomHillClimber {
         int nEvals = 1000;
         int nDim = 10;
         double[] init = randVec(nDim);
-        SimpleRandomHillClimber evo = new SimpleRandomHillClimber(init, new QuadraticBowl());
+        SimpleRandomHillClimberEngine evo = new SimpleRandomHillClimberEngine(init, new QuadraticBowl());
 
         evo.run(nEvals);
 
@@ -40,12 +40,12 @@ public class SimpleRandomHillClimber {
 
     }
 
-    public SimpleRandomHillClimber(double[] bestYet, Eval2 eval) {
+    public SimpleRandomHillClimberEngine(double[] bestYet, Eval2 eval) {
         this.bestYet = bestYet;
         this.eval = eval;
     }
 
-    public void run(int nEvals) {
+    public double[] run(int nEvals) {
         for (int i=0; i<nEvals; i++) {
             // randomly mutate the best yet
             double[] mut = randMut(bestYet, stepFac);
@@ -61,15 +61,8 @@ public class SimpleRandomHillClimber {
             }
             System.out.println(i + "\t " + mag2(bestYet));
         }
-    }
 
-    // to evolve a game playing agent inject a and b into
-    // game agent controllers and return the points difference
-    // ensure to interpret the sign correctly
-    // the example is set up to MINIMIZE a fitness score
-
-    static interface Eval2 {
-        double pointsDiff(double[] a, double[] b);
+        return bestYet;
     }
 
     static double[] randVec(int n) {
