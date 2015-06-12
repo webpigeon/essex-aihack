@@ -24,7 +24,7 @@ public class MemoController1 implements RenderableBattleController {
     public double ROT_TO_TARGET_THRESH = 45 * Math.PI / 180.0;   // threshold for when we're aiming at desired pos
 
     public double ATTACK_PROB = 0.1;
-    public double ATTACK_SHOOT_PROB = 0.5;
+    public double ATTACK_SHOOT_PROB = 0.3;
     public double ATTACK_THRUST_PROB = 0.00;
     public double ATTACK_ROT_THRESH = 5 * Math.PI / 180.0;
 
