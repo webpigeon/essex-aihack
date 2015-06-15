@@ -1,7 +1,6 @@
 package battle.controllers.Piers;
 
 import asteroids.Action;
-import battle.NeuroShip;
 import battle.SimpleBattle;
 
 import java.util.Random;
@@ -116,9 +115,11 @@ public class BetterMCTSNode {
     public void updateValues(double value) {
         BetterMCTSNode current = this;
         double alteredValue = value / 1000;
+        double discountFactor = 0.95;
         while (current.parent != null) {
             current.numberOfVisits++;
-            current.totalValue += alteredValue;
+            alteredValue *= discountFactor;
+            current.totalValue += (alteredValue);
             current = current.parent;
         }
         current.totalValue += alteredValue;
@@ -132,7 +133,10 @@ public class BetterMCTSNode {
             Action second = allActions[random.nextInt(allActions.length)];
             state.update(first, second);
         }
-        return state.getPoints(playerID) - (100 - state.getMissilesLeft(playerID));
+        int missilesUsed = 100 - state.getMissilesLeft(playerID);
+        int ourPoints = state.getPoints(playerID);
+        int enemyPoints = state.getPoints(playerID == 0 ? 1 : 0);
+        return (ourPoints - (missilesUsed * 5) - (enemyPoints * 1.5));
     }
 
     public Action getBestAction() {
