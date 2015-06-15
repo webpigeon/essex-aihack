@@ -24,14 +24,14 @@ public class NeuroShip extends GameObject {
     public static double scale = 5;
 
     // define how quickly the ship will rotate
-    static double steerStep = 10 * Math.PI / 180;
-    static double maxSpeed = 3;
+    double steerStep = 10 * Math.PI / 180;
+    double maxSpeed = 3;
+    double acceleration = 1;
 
     // this is the friction that makes the ship slow down over time
     static double loss = 0.99;
 
     double releaseVelocity = 0;
-    double minVelocity = 2;
     public static double maxRelease = 10;
     Color color = Color.white;
     boolean thrusting = false;
@@ -52,6 +52,14 @@ public class NeuroShip extends GameObject {
         this.d = new Vector2d(d, true);
         this.totalDistance = new Vector2d(true);
         this.playerID = playerID;
+    }
+
+    public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID, double topSpeed, double acceleration, double degreesOfRotationPerTick)
+    {
+        this(s, v, d, playerID);
+        maxSpeed = topSpeed;
+        steerStep = degreesOfRotationPerTick * Math.PI / 180;
+        this.acceleration = acceleration;
     }
 
     public NeuroShip copy() {
@@ -106,7 +114,7 @@ public class NeuroShip extends GameObject {
         }
 
         //prevent people from cheating
-        double thrustSpeed = clamp(action.thrust, 0, 1);
+        double thrustSpeed = clamp(action.thrust*acceleration, 0, acceleration);
         double turnAngle = clamp(action.turn, -1, 1);
 
         d.rotate(turnAngle * steerStep);

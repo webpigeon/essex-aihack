@@ -24,10 +24,15 @@ public class SimpleBattle {
 
     // play a time limited game with a strict missile budget for
     // each player
-    static int nMissiles = 100;
     static int nTicks = 1000;
     static int pointsPerKill = 10;
     static int releaseVelocity = 5;
+
+    //Configurable Values, with defaults
+    int nMissiles = 100;
+    double topSpeed = 3.0;
+    double acceleration = 1.0;
+    double rotationDegreesPerTick = 10;
 
     boolean visible = true;
 
@@ -42,13 +47,21 @@ public class SimpleBattle {
     int currentTick;
 
     public SimpleBattle() {
-        this(true);
+        this(true, 100, 3.0, 1.0, 10);
     }
 
     public SimpleBattle(boolean visible) {
+        this(visible, 100, 3.0, 1.0, 10);
+    }
+
+    public SimpleBattle(boolean visible, int nMissiles, double topSpeed, double acceleration, double rotationDegreesPerTick) {
         this.objects = new ArrayList<>();
         this.stats = new ArrayList<>();
         this.visible = visible;
+        this.nMissiles = nMissiles;
+        this.topSpeed = topSpeed;
+        this.acceleration = acceleration;
+        this.rotationDegreesPerTick = rotationDegreesPerTick;
 
         if (visible) {
             view = new BattleView(this);
@@ -110,7 +123,7 @@ public class SimpleBattle {
         Vector2d speed = new Vector2d(true);
         Vector2d direction = new Vector2d(1, 0, true);
 
-        return new NeuroShip(position, speed, direction, playerID );
+        return new NeuroShip(position, speed, direction, playerID, topSpeed, acceleration, rotationDegreesPerTick );
     }
 
     public void update() {

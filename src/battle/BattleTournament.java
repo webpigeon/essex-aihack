@@ -25,12 +25,18 @@ public class BattleTournament {
     private SimpleBattle battleEngine;
     private Map<BattleController, BattleStats> scores;
 
-    public BattleTournament() throws FileNotFoundException {
+    public BattleTournament() throws FileNotFoundException
+    {
+        this(100, 3.0, 1.0, 10);
+    }
+
+    public BattleTournament(int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
+    {
         this.controllers = new ArrayList<>();
-        this.battleEngine = new SimpleBattle(false);
+        this.battleEngine = new SimpleBattle(false, numBullets, topSpeed, acceleration, rotationDegreesPerTick);
         this.scores = new HashMap<>();
-        this.detail = new GenerateCSV("detail.csv");
-        this.summary = new GenerateCSV("summary.csv");
+        this.detail = new GenerateCSV(String.format("detail[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));
+        this.summary = new GenerateCSV(String.format("summary[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));
 
         summary.writeLine("class", "wins", "losses", "draws");
         detail.writeLine("player1", "player2", "p1Score", "p2Score");
@@ -125,13 +131,14 @@ public class BattleTournament {
         }
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        BattleTournament bt = new BattleTournament();
+    private static void RunTournament(int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
+    {
+        BattleTournament bt = new BattleTournament(numBullets, topSpeed, acceleration, rotationDegreesPerTick);
 
         //players
         bt.addController(new MemoController1());
-        bt.addController(new MMMCTS());
-        bt.addController(new PiersMCTS());
+        //bt.addController(new MMMCTS());
+        //bt.addController(new PiersMCTS());
         bt.addController(new Naz_AI());
         bt.addController(new DaniController());
 
@@ -148,13 +155,48 @@ public class BattleTournament {
 
         csv.writeLine("class", "wins", "losses", "draws");
         Map<BattleController, BattleStats> scores = bt.getScores();
-        for (Map.Entry<BattleController, BattleStats>  bs : scores.entrySet()) {
+        for (Map.Entry<BattleController, BattleStats> bs : scores.entrySet()) {
             String formatStr = "%50s %s";
             BattleController controller = bs.getKey();
             BattleStats stats = bs.getValue();
 
             csv.writeLine(controller.getClass().getSimpleName(), stats.wins, stats.losses, stats.draws);
             System.out.println(String.format(formatStr, bs.getKey().getClass().getSimpleName(), bs.getValue()));
+        }
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+
+        int defaultNumBullets = 100;
+        double defaultTopSpeed = 3.0;
+        double defaultAcceleration = 1.0;
+        double defaultRotationDegreesPerTick = 10;
+
+        int[] numBullets = new int[] { 10, 1000 };
+        double[] topSpeeds = new double[] { 1.0, 2.0 };
+        double[] accelerations = new double[] { 0.34, 0.67 };
+        double[] rotationDegreesPerTick = new double[] {5, 15};
+
+        RunTournament(defaultNumBullets, defaultTopSpeed, defaultAcceleration, defaultRotationDegreesPerTick);
+
+        for(int i = 0; i < numBullets.length; i++)
+        {
+            RunTournament(numBullets[i], defaultTopSpeed, defaultAcceleration, defaultRotationDegreesPerTick);
+        }
+
+        for(int i = 0; i < topSpeeds.length; i++)
+        {
+            RunTournament(defaultNumBullets, topSpeeds[i], defaultAcceleration, defaultRotationDegreesPerTick);
+        }
+
+        for(int i = 0; i < accelerations.length; i++)
+        {
+            RunTournament(defaultNumBullets, defaultTopSpeed, accelerations[i], defaultRotationDegreesPerTick);
+        }
+
+        for(int i = 0; i < rotationDegreesPerTick.length; i++)
+        {
+            RunTournament(defaultNumBullets, defaultTopSpeed, defaultAcceleration, rotationDegreesPerTick[i]);
         }
     }
 }
