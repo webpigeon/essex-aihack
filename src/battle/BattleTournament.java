@@ -19,14 +19,21 @@ import java.util.*;
 public class BattleTournament {
     private final static Integer NUM_ROUNDS = 5;
 
+    private GenerateCSV summary;
+    private GenerateCSV detail;
     private List<BattleController> controllers;
     private SimpleBattle battleEngine;
     private Map<BattleController, BattleStats> scores;
 
-    public BattleTournament() {
+    public BattleTournament() throws FileNotFoundException {
         this.controllers = new ArrayList<>();
         this.battleEngine = new SimpleBattle(false);
         this.scores = new HashMap<>();
+        this.detail = new GenerateCSV("detail.csv");
+        this.summary = new GenerateCSV("summary.csv");
+
+        summary.writeLine("class", "wins", "losses", "draws");
+        detail.writeLine("player1", "player2", "p1Score", "p2Score");
     }
 
     public void addController(BattleController controller) {
@@ -47,6 +54,13 @@ public class BattleTournament {
                     runRounds(p1, p2, NUM_ROUNDS);
                 }
             }
+        }
+
+        for (Map.Entry<BattleController, BattleStats>  bs : scores.entrySet()) {;
+            BattleController controller = bs.getKey();
+            BattleStats stats = bs.getValue();
+
+            summary.writeLine(controller.getClass().getSimpleName(), stats.wins, stats.losses, stats.draws);
         }
     }
 
@@ -94,6 +108,10 @@ public class BattleTournament {
             }
         }
 
+        NeuroShip ship1 = battleEngine.getShip(0);
+        NeuroShip ship2 = battleEngine.getShip(1);
+
+        detail.writeLine(player1.getClass(), player2.getClass(), p1Score, p2Score, battleEngine.getMissilesLeft(0), battleEngine.getMissilesLeft(1), battleEngine.getTicks(), ship1.getTotalDistance().x, ship1.getTotalDistance().y, ship2.getTotalDistance().x, ship2.getTotalDistance().y);
     }
 
     private static class BattleStats {
