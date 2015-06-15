@@ -45,6 +45,7 @@ public class NeuroShip extends GameObject {
     int playerID;
 
     Vector2d totalDistance;
+    double totalMag;
 
 
     public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
@@ -123,9 +124,12 @@ public class NeuroShip extends GameObject {
         // v.x = 0.5;
         v.multiply(loss);
 
-        // This is fairly basic, but it'll do for now...
-        v.x = clamp(v.x, -maxSpeed, maxSpeed);
-        v.y = clamp(v.y, -maxSpeed, maxSpeed);
+        // This is fairly basic, but it'll do for now..
+        if (v.mag() >= maxSpeed) {
+            v.normalise();
+            v.multiply(maxSpeed);
+        }
+        totalMag += v.mag();
 
         totalDistance.x += Math.abs(v.x);
         totalDistance.y += Math.abs(v.y);
