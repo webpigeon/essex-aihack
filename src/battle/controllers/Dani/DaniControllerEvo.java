@@ -24,6 +24,18 @@ public class DaniControllerEvo implements RenderableBattleController
 {
     int myPlayerId = 0;
 
+    public static final int THRUST_AMT = 0;
+    public static final int ROT_AMT = 1;
+    public static final int AVOID = 2;
+    public static final int TAIL = 3;
+    public static final int FOLLOW = 4;
+    public static final int DIST = 5;
+    
+    public static final int N_FEATURES = 6;
+    
+
+    double [] features = new double[N_FEATURES];
+
     Action action;
     Vector2d targetPos;
     double viewRadius = 20.0;
@@ -53,6 +65,14 @@ public class DaniControllerEvo implements RenderableBattleController
     public DaniControllerEvo()
 
     {
+        features[THRUST_AMT] = 1.5;
+        features[ROT_AMT] = 1.5;
+        features[AVOID] = 1.5;
+        features[TAIL] = 1.0;
+        features[FOLLOW] = 0.6;
+        features[DIST] = 0.4;
+        
+        
         action = new Action();
         targetPos = new Vector2d(0,0);
         thrustAmt = 0.5 + Math.random();
@@ -145,7 +165,7 @@ public class DaniControllerEvo implements RenderableBattleController
     Vector2d keepDistanceVector( SimpleBattle gstate, Vector2d shipPos, Vector2d enemyPos )
     {
         if( shipPos.dist(enemyPos) < 50 )
-            return Vector2d.multiply( Vector2d.subtract(shipPos, enemyPos), 0.3 );
+            return Vector2d.multiply( Vector2d.subtract(shipPos, enemyPos), 1.0 );
 
         return new Vector2d(0,0);
     }
@@ -189,63 +209,7 @@ public class DaniControllerEvo implements RenderableBattleController
         enemyLineB = vb;
         return Vector2d.multiply( Vector2d.subtract(tailPos, shipPos), 1.0 );
     }
-    Vector2d avoidBulletsVectorBad( SimpleBattle gstate, Vector2d shipPos )
-    {
-        ArrayList<Missile> M = getMissiles(gstate);
-        meanMissilePos = new Vector2d(0,0, true);
-        meanMissileDir  = new Vector2d(0,0, true);
-
-        int c = 0;
-        for(Missile m : M)
-        {
-            meanMissilePos.add(m.s);
-            meanMissileDir.add(m.v);
-            c++;
-        }
-
-        // no missiles bail out
-        if(c==0)
-        {
-            anyMissiles = false;
-            System.out.println("No missiles");
-            return new Vector2d(0,0,true);
-        }
-
-        meanMissilePos.divide(c);
-        meanMissileDir.normalise();
-        // project onto main missile line
-        double min = 1000000;
-        double max = -1000000;
-
-        for(Missile m : M)
-        {
-            Vector2d p = new Vector2d(m.s,true);
-            p.subtract(meanMissilePos);
-            double d = dot(p, meanMissileDir);
-            if( d < min )
-                min = d;
-            if( d > max )
-                max = d;
-        }
-
-        missileLineA = Vector2d.add( meanMissilePos, Vector2d.multiply(meanMissileDir, min) );
-        missileLineB = Vector2d.add( meanMissilePos, Vector2d.multiply(meanMissileDir, max) );
-
-        anyMissiles = false;
-
-        segp = closestPointOnSegment( shipPos, missileLineA, missileLineB );
-        double dist = segp.dist(shipPos);
-        if( dist < 500 )
-        {
-            Vector2d vavoid = Vector2d.subtract( shipPos, segp );
-            vavoid.normalise();
-
-            return Vector2d.multiply(vavoid, (1.0/(dist+1.0))*10000) ;
-        }
-
-        return new Vector2d(0,0,true);
-    }
-
+    
     double heading( Vector2d v )
     {
         double theta = Math.atan2(v.y, v.x);
@@ -266,10 +230,10 @@ public class DaniControllerEvo implements RenderableBattleController
         Vector2d vTail = tailVector(gstate, shipPos);
 
         //
-        v.add(vAvoid);
-        v.add(vTail);
-        v.add(vFollow);
-        v.add(vDist);
+        v.add( Vector2d.multiply(vAvoid, features[AVOID]) );
+        v.add( Vector2d.multiply(vTail, features[TAIL]) );
+        v.add( Vector2d.multiply(vFollow, features[FOLLOW]) ) ;
+        v.add( Vector2d.multiply(vDist, features[DIST]) );
 
         double mag = v.mag();
 
@@ -298,7 +262,7 @@ public class DaniControllerEvo implements RenderableBattleController
 
         Vector2d rt = rotThrustAt( gstate, shipPos, enemyPos );
         Vector2d d = new Vector2d( Math.cos(rt.x)*rt.y, Math.sin(rt.x)*rt.y );
-        res.thrust = rt.y;
+        res.thrust = rt.y * features[THRUST_AMT];
 
         grid = new ArrayList<Vector2d>();
         rtGrid = new ArrayList<Vector2d>();
@@ -313,15 +277,7 @@ public class DaniControllerEvo implements RenderableBattleController
                 rtGrid.add(rotThrust);
             }
 
-        // Direction towards enemy
-        /*
-        Vector2d d = new Vector2d( enemyPos.x - thisPos.x, enemyPos.y - thisPos.y, true );
-        Vector2d vavoid = avoidBulletsVector( gstate, thisPos );
-        d.add(vavoid);
-        d.add( keepDistanceVector(gstate, thisPos, enemyPos) );
-        */
-
-        double rot = angleBetween(ship.d, d)*rotAmt;
+        double rot = angleBetween(ship.d, d)*features[ROT_AMT];
         //double rot = rt.x - heading(ship.d);
 
         if(inView(ship, enemy) && shotWait <= 0)
