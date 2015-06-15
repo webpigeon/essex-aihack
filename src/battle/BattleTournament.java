@@ -10,6 +10,7 @@ import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
 import battle.controllers.mmmcts.MMMCTS;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -106,13 +107,13 @@ public class BattleTournament {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         BattleTournament bt = new BattleTournament();
 
         //players
         bt.addController(new MemoController1());
-        bt.addController(new MMMCTS());
-        bt.addController(new PiersMCTS());
+        //bt.addController(new MMMCTS());
+        //bt.addController(new PiersMCTS());
         bt.addController(new Naz_AI());
         bt.addController(new DaniController());
 
@@ -125,9 +126,16 @@ public class BattleTournament {
 
         bt.runMatchups();
 
+        GenerateCSV csv = new GenerateCSV("test.csv");
+
+        csv.writeLine("class", "wins", "losses", "draws");
         Map<BattleController, BattleStats> scores = bt.getScores();
         for (Map.Entry<BattleController, BattleStats>  bs : scores.entrySet()) {
             String formatStr = "%50s %s";
+            BattleController controller = bs.getKey();
+            BattleStats stats = bs.getValue();
+
+            csv.writeLine(controller.getClass().getSimpleName(), stats.wins, stats.losses, stats.draws);
             System.out.println(String.format(formatStr, bs.getKey().getClass().getSimpleName(), bs.getValue()));
         }
     }

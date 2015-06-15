@@ -122,8 +122,6 @@ public class NeuroShip extends GameObject {
         totalDistance.x += Math.abs(v.x);
         totalDistance.y += Math.abs(v.y);
 
-        System.out.println(this+" "+totalDistance);
-
         s.add(v);
 
         return this;
