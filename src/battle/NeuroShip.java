@@ -44,16 +44,20 @@ public class NeuroShip extends GameObject {
     // played id (used for drawing)
     int playerID;
 
+    Vector2d totalDistance;
+
 
     public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
         super(new Vector2d(s, true), new Vector2d(v, true));
         this.d = new Vector2d(d, true);
+        this.totalDistance = new Vector2d(true);
         this.playerID = playerID;
     }
 
     public NeuroShip copy() {
         NeuroShip ship = new NeuroShip(s, v, d, playerID);
         ship.releaseVelocity = releaseVelocity;
+        ship.totalDistance = new Vector2d(totalDistance);
         return ship;
     }
 
@@ -115,6 +119,11 @@ public class NeuroShip extends GameObject {
         v.x = clamp(v.x, -maxSpeed, maxSpeed);
         v.y = clamp(v.y, -maxSpeed, maxSpeed);
 
+        totalDistance.x += Math.abs(v.x);
+        totalDistance.y += Math.abs(v.y);
+
+        System.out.println(this+" "+totalDistance);
+
         s.add(v);
 
         return this;
@@ -135,6 +144,10 @@ public class NeuroShip extends GameObject {
         } else {
             // System.out.println("Failed!");
         }
+    }
+
+    public Vector2d getTotalDistance() {
+        return totalDistance;
     }
 
     public String toString() {
