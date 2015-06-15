@@ -1,9 +1,11 @@
 package battle;
 
+import battle.controllers.Dani.DaniController;
 import battle.controllers.EmptyController;
 import battle.controllers.FireForwardController;
 import battle.controllers.Memo.MemoController1;
 import battle.controllers.Memo.MemoControllerRandom;
+import battle.controllers.Naz.Naz_AI;
 import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
 import battle.controllers.mmmcts.MMMCTS;
@@ -107,10 +109,15 @@ public class BattleTournament {
     public static void main(String[] args) {
         BattleTournament bt = new BattleTournament();
 
-        bt.addController(new MemoControllerRandom());
+        //players
         bt.addController(new MemoController1());
         bt.addController(new MMMCTS());
         bt.addController(new PiersMCTS());
+        bt.addController(new Naz_AI());
+        bt.addController(new DaniController());
+
+        //extras
+        bt.addController(new MemoControllerRandom());
 
         // Dippy AIs
         bt.addController(new FireForwardController());
