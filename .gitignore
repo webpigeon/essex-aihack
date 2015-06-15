@@ -11,3 +11,4 @@ buildNumber.properties
 # intellij idea project paths
 .idea/workspace.xml
 .idea/tasks.xml
+*.csv
