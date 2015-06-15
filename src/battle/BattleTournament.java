@@ -39,7 +39,22 @@ public class BattleTournament {
         this.summary = new GenerateCSV(String.format("summary[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));
 
         summary.writeLine("class", "wins", "losses", "draws");
-        detail.writeLine("run number", "player1", "player2", "p1Score", "p2Score", "s1Missles", "s2Missles", "gameTicks", "s1DistX", "s2DistY", "s2DistX", "s2DistY");
+        detail.writeLine("run number",
+                "player1",
+                "player2",
+                "p1Score",
+                "p2Score",
+                "s1Missles",
+                "s2Missles",
+                "gameTicks",
+                "s1DistX",
+                "s2DistY",
+                "s2DistX",
+                "s2DistY",
+                "numBullets",
+                "topSpeed",
+                "acceleration",
+                "rotationDegreesPerTick");
         //stuff to store
         // totalMagMoved
     }
@@ -119,7 +134,23 @@ public class BattleTournament {
         NeuroShip ship1 = battleEngine.getShip(0);
         NeuroShip ship2 = battleEngine.getShip(1);
 
-        detail.writeLine(runID, player1.getClass(), player2.getClass(), p1Score, p2Score, battleEngine.getMissilesLeft(0), battleEngine.getMissilesLeft(1), battleEngine.getTicks(), ship1.getTotalDistance().x, ship1.getTotalDistance().y, ship2.getTotalDistance().x, ship2.getTotalDistance().y);
+        detail.writeLine(runID,
+                player1.getClass(),
+                player2.getClass(),
+                p1Score,
+                p2Score,
+                battleEngine.getMissilesLeft(0),
+                battleEngine.getMissilesLeft(1),
+                battleEngine.getTicks(),
+                ship1.getTotalDistance().x,
+                ship1.getTotalDistance().y,
+                ship2.getTotalDistance().x,
+                ship2.getTotalDistance().y,
+                battleEngine.nMissiles,
+                battleEngine.topSpeed,
+                battleEngine.acceleration,
+                battleEngine.rotationDegreesPerTick
+                );
     }
 
     private static class BattleStats {
