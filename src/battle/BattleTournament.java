@@ -17,7 +17,7 @@ import java.util.*;
  * Created by jwalto on 11/06/2015.
  */
 public class BattleTournament {
-    private final static Integer NUM_ROUNDS = 5;
+    private final static Integer NUM_ROUNDS = 10;
 
     private GenerateCSV summary;
     private GenerateCSV detail;
@@ -33,7 +33,9 @@ public class BattleTournament {
         this.summary = new GenerateCSV("summary.csv");
 
         summary.writeLine("class", "wins", "losses", "draws");
-        detail.writeLine("player1", "player2", "p1Score", "p2Score", "s1Missles", "s2Missles", "gameTicks", "s1DistX", "s2DistY", "s2DistX", "s2DistY");
+        detail.writeLine("run number", "player1", "player2", "p1Score", "p2Score", "s1Missles", "s2Missles", "gameTicks", "s1DistX", "s2DistY", "s2DistX", "s2DistY");
+        //stuff to store
+        // totalMagMoved
     }
 
     public void addController(BattleController controller) {
@@ -66,11 +68,11 @@ public class BattleTournament {
 
     public void runRounds(BattleController p1, BattleController p2, int rounds) {
         for (int i=0; i<rounds; i++) {
-            runGame(p1, p2);
+            runGame(p1, p2, i);
         }
     }
 
-    public void runGame(BattleController player1, BattleController player2) {
+    public void runGame(BattleController player1, BattleController player2, int runID) {
         battleEngine.playGame(player1, player2);
 
         BattleStats p1Stats = scores.getOrDefault(player1, new BattleStats());
@@ -111,7 +113,7 @@ public class BattleTournament {
         NeuroShip ship1 = battleEngine.getShip(0);
         NeuroShip ship2 = battleEngine.getShip(1);
 
-        detail.writeLine(player1.getClass(), player2.getClass(), p1Score, p2Score, battleEngine.getMissilesLeft(0), battleEngine.getMissilesLeft(1), battleEngine.getTicks(), ship1.getTotalDistance().x, ship1.getTotalDistance().y, ship2.getTotalDistance().x, ship2.getTotalDistance().y);
+        detail.writeLine(runID, player1.getClass(), player2.getClass(), p1Score, p2Score, battleEngine.getMissilesLeft(0), battleEngine.getMissilesLeft(1), battleEngine.getTicks(), ship1.getTotalDistance().x, ship1.getTotalDistance().y, ship2.getTotalDistance().x, ship2.getTotalDistance().y);
     }
 
     private static class BattleStats {
