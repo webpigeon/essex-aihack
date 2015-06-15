@@ -1,5 +1,10 @@
 package ga;
 
+import battle.BattleController;
+import battle.SimpleBattle;
+import battle.controllers.Memo.MemoController1;
+import battle.controllers.mmmcts.MMMCTS;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -13,7 +18,7 @@ public class SimpleRandomHillClimber {
     double[] bestYet;
     Eval2 eval;
 
-    double stepFac = 0.1;
+    double stepFac = 0.05;
 
     // set stepAdjust to 1.0 to keep the stepFac fixed
 
@@ -28,10 +33,9 @@ public class SimpleRandomHillClimber {
     // co-evolution
 
     public static void main(String[] args) {
-        int nEvals = 1000;
-        int nDim = 10;
-        double[] init = randVec(nDim);
-        SimpleRandomHillClimber evo = new SimpleRandomHillClimber(init, new QuadraticBowl());
+        int nEvals = 100;
+
+        SimpleRandomHillClimber evo = new SimpleRandomHillClimber(MemoController1.getFeatures(), new MemoEval2());
 
         evo.run(nEvals);
 
@@ -49,6 +53,8 @@ public class SimpleRandomHillClimber {
         for (int i=0; i<nEvals; i++) {
             // randomly mutate the best yet
             double[] mut = randMut(bestYet, stepFac);
+
+           // System.out.println(i + "\t " + mag2(bestYet) + "\t" + Arrays.toString(bestYet) + "\t" + Arrays.toString(mut));
             double diff = eval.pointsDiff(bestYet, mut);
 
             // if it's better then adopt the mutation as the new best
@@ -104,5 +110,39 @@ public class SimpleRandomHillClimber {
         double tot = 0;
         for (double x : v) tot += x * x;
         return tot;
+    }
+
+
+    /**
+     * Created by Memo Akten on 12/06/2015.
+     */
+    static class MemoEval2 implements Eval2 {
+
+        // returns whether or not I won
+        int playWith(double[] v) {
+            System.out.print("Playing with: " + Arrays.toString(v));
+            SimpleBattle battle = new SimpleBattle();
+            BattleController player1 = new MemoController1();
+            MemoController1.setFeatures(v);
+
+            BattleController player2 = new MMMCTS();
+            battle.playGame(player1, player2);
+
+            int score = battle.getPoints(0) - battle.getPoints(1);
+            System.out.println(" | Score: " + score);
+            return score;
+        }
+
+        @Override
+        public double pointsDiff(double[] a, double[] b) {
+            int num_games = 3;
+            int wins_a = 0, wins_b = 0;
+            for(int i=0; i<num_games; i++) {
+                wins_a += playWith(a);
+                wins_b += playWith(b);
+            }
+
+            return wins_a > wins_b ? -1 : 1;
+        }
     }
 }
