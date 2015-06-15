@@ -302,7 +302,7 @@ public class SimpleBattle {
         assert playerID < 2;
         assert playerID >= 0;
 
-        return stats.get(playerID).nMissiles - nMissiles;
+        return nMissiles - stats.get(playerID).nMissiles;
     }
 
     private void wrap(GameObject ob) {
@@ -314,7 +314,7 @@ public class SimpleBattle {
     }
 
     public boolean isGameOver() {
-        if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
+        if (getMissilesLeft(0) <= 0 && getMissilesLeft(1) <= 0) {
             //ensure that there are no bullets left in play
             if (objects.isEmpty()) {
                 return true;
