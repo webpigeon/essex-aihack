@@ -33,7 +33,7 @@ public class BattleTournament {
         this.summary = new GenerateCSV("summary.csv");
 
         summary.writeLine("class", "wins", "losses", "draws");
-        detail.writeLine("player1", "player2", "p1Score", "p2Score");
+        detail.writeLine("player1", "player2", "p1Score", "p2Score", "s1Missles", "s2Missles", "gameTicks", "s1DistX", "s2DistY", "s2DistX", "s2DistY");
     }
 
     public void addController(BattleController controller) {
