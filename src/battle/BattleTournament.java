@@ -170,8 +170,8 @@ public class BattleTournament {
 
         //players
         bt.addController(new MemoController1());
-        //bt.addController(new MMMCTS());
-        //bt.addController(new PiersMCTS());
+        bt.addController(new MMMCTS());
+        bt.addController(new PiersMCTS());
         bt.addController(new Naz_AI());
         bt.addController(new DaniController());
 
