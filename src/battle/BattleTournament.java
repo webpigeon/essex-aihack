@@ -12,6 +12,10 @@ import battle.controllers.mmmcts.MMMCTS;
 
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by jwalto on 11/06/2015.
@@ -27,13 +31,13 @@ public class BattleTournament {
 
     public BattleTournament() throws FileNotFoundException
     {
-        this(100, 3.0, 1.0, 10);
+        this(false, 100, 3.0, 1.0, 10);
     }
 
-    public BattleTournament(int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
+    public BattleTournament(boolean visible, int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
     {
         this.controllers = new ArrayList<>();
-        this.battleEngine = new SimpleBattle(false, numBullets, topSpeed, acceleration, rotationDegreesPerTick);
+        this.battleEngine = new SimpleBattle(visible, numBullets, topSpeed, acceleration, rotationDegreesPerTick);
         this.scores = new HashMap<>();
         this.detail = new GenerateCSV(String.format("detail[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));
         this.summary = new GenerateCSV(String.format("summary[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));
@@ -89,6 +93,9 @@ public class BattleTournament {
 
             summary.writeLine(controller.getClass().getSimpleName(), stats.wins, stats.losses, stats.draws);
         }
+
+        detail.close();
+        summary.close();
     }
 
     public void runRounds(BattleController p1, BattleController p2, int rounds) {
@@ -196,41 +203,41 @@ public class BattleTournament {
         }
     }
 
-    private static void RunTournament(int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
+    private static Callable<Object> RunTournament(int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
     {
-        BattleTournament bt = new BattleTournament(numBullets, topSpeed, acceleration, rotationDegreesPerTick);
+        Callable task = new Callable() {
+            @Override
+            public Object call() throws Exception {
+                try {
+                    BattleTournament bt = new BattleTournament(false, numBullets, topSpeed, acceleration, rotationDegreesPerTick);
 
-        //players
-        bt.addController(new MemoController1());
-        bt.addController(new MMMCTS());
-        //bt.addController(new PiersMCTS());
-        bt.addController(new Naz_AI());
-        bt.addController(new DaniController());
+                    //players
+                    bt.addController(new MemoController1());
+                    //bt.addController(new MMMCTS());
+                    bt.addController(new PiersMCTS());
+                    bt.addController(new Naz_AI());
+                    bt.addController(new DaniController());
 
-        //extras
-        bt.addController(new MemoControllerRandom());
+                    //extras
+                    bt.addController(new MemoControllerRandom());
 
-        // Dippy AIs
-        bt.addController(new FireForwardController());
-        bt.addController(new RotateAndShoot());
+                    // Dippy AIs
+                    bt.addController(new FireForwardController());
+                    bt.addController(new RotateAndShoot());
 
-        bt.runMatchups();
-
-        GenerateCSV csv = new GenerateCSV("test.csv");
-
-        csv.writeLine("class", "wins", "losses", "draws");
-        Map<BattleController, BattleStats> scores = bt.getScores();
-        for (Map.Entry<BattleController, BattleStats> bs : scores.entrySet()) {
-            String formatStr = "%50s %s";
-            BattleController controller = bs.getKey();
-            BattleStats stats = bs.getValue();
-
-            csv.writeLine(controller.getClass().getSimpleName(), stats.wins, stats.losses, stats.draws);
-            System.out.println(String.format(formatStr, bs.getKey().getClass().getSimpleName(), bs.getValue()));
-        }
+                    bt.runMatchups();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+        };
+        return task;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+
+        ExecutorService service = Executors.newFixedThreadPool(4);
 
         int defaultNumBullets = 100;
         double defaultTopSpeed = 3.0;
@@ -238,30 +245,35 @@ public class BattleTournament {
         double defaultRotationDegreesPerTick = 10;
 
         int[] numBullets = new int[] { 10, 1000 };
-        double[] topSpeeds = new double[] { 1.0, 2.0 };
-        double[] accelerations = new double[] { 0.34, 0.67 };
-        double[] rotationDegreesPerTick = new double[] {5, 15};
+        double[] topSpeeds = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 };
+        double[] accelerations = new double[] { 0.5, 1.0, 1.5, 2.0, 3.0 };
+        double[] rotationDegreesPerTick = new double[] {1, 5, 10, 15, 25};
 
-        RunTournament(defaultNumBullets, defaultTopSpeed, defaultAcceleration, defaultRotationDegreesPerTick);
+        List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+
+        tasks.add(RunTournament(defaultNumBullets, defaultTopSpeed, defaultAcceleration, defaultRotationDegreesPerTick));
 
         for(int i = 0; i < numBullets.length; i++)
         {
-            RunTournament(numBullets[i], defaultTopSpeed, defaultAcceleration, defaultRotationDegreesPerTick);
+            tasks.add(RunTournament(numBullets[i], defaultTopSpeed, defaultAcceleration, defaultRotationDegreesPerTick));
         }
 
         for(int i = 0; i < topSpeeds.length; i++)
         {
-            RunTournament(defaultNumBullets, topSpeeds[i], defaultAcceleration, defaultRotationDegreesPerTick);
+            tasks.add(RunTournament(defaultNumBullets, topSpeeds[i], defaultAcceleration, defaultRotationDegreesPerTick));
         }
 
         for(int i = 0; i < accelerations.length; i++)
         {
-            RunTournament(defaultNumBullets, defaultTopSpeed, accelerations[i], defaultRotationDegreesPerTick);
+            tasks.add(RunTournament(defaultNumBullets, defaultTopSpeed, accelerations[i], defaultRotationDegreesPerTick));
         }
 
         for(int i = 0; i < rotationDegreesPerTick.length; i++)
         {
-            RunTournament(defaultNumBullets, defaultTopSpeed, defaultAcceleration, rotationDegreesPerTick[i]);
+            tasks.add(RunTournament(defaultNumBullets, defaultTopSpeed, defaultAcceleration, rotationDegreesPerTick[i]));
         }
+
+        service.invokeAll(tasks);
+        service.shutdown();
     }
 }
