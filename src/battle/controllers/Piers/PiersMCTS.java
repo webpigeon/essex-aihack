@@ -25,19 +25,19 @@ public class PiersMCTS implements BattleController {
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
         GameTimer timer = new GameTimer();
-        timer.setTimeBudgetMilliseconds(40);
+        timer.setTimeBudgetMilliseconds(25);
         Action action = currentBestAction.getAction();
 
         double distance = gameStateCopy.getShip(0).s.dist(gameStateCopy.getShip(1).s);
         ACTIONS_PER_MACRO = (distance > DISTANCE_THRESHOLD) ? ACTIONS_PER_MACRO_ENEMY_FAR : ACTIONS_PER_MACRO_ENEMY_CLOSE;
 
-        if (root == null) root = new BetterMCTSNode(2.0, playerId);
-        if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) root = new BetterMCTSNode(2.0, playerId);
+        if (root == null) root = new BetterMCTSNode(2.0, playerId, this);
+        if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) root = new BetterMCTSNode(2.0, playerId, this);
 
         int i = 0;
         while (timer.remainingTimePercent() > 10) {
             SimpleBattle copy = gameStateCopy.clone();
-            BetterMCTSNode travel = root.select(copy, 6);
+            BetterMCTSNode travel = root.select(copy, 3);
             double result = travel.rollout(copy, 10);
             travel.updateValues(result);
             i++;
