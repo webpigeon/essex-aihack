@@ -17,7 +17,7 @@ import java.util.*;
  * Created by jwalto on 11/06/2015.
  */
 public class BattleTournament {
-    private final static Integer NUM_ROUNDS = 10;
+    private final static Integer NUM_ROUNDS = 3;
 
     private GenerateCSV summary;
     private GenerateCSV detail;
@@ -42,15 +42,19 @@ public class BattleTournament {
         detail.writeLine("run number",
                 "player1",
                 "player2",
-                "p1Score",
-                "p2Score",
+                "s1Score",
+                "s2Score",
                 "s1Missles",
                 "s2Missles",
                 "gameTicks",
                 "s1DistX",
-                "s2DistY",
+                "s1DistY",
                 "s2DistX",
                 "s2DistY",
+                "s1Mag",
+                "s2Mag",
+                "s1Wraps",
+                "s2Wraps",
                 "numBullets",
                 "topSpeed",
                 "acceleration",
@@ -79,7 +83,7 @@ public class BattleTournament {
             }
         }
 
-        for (Map.Entry<BattleController, BattleStats>  bs : scores.entrySet()) {;
+        for (Map.Entry<BattleController, BattleStats>  bs : scores.entrySet()) {
             BattleController controller = bs.getKey();
             BattleStats stats = bs.getValue();
 
@@ -134,7 +138,8 @@ public class BattleTournament {
         NeuroShip ship1 = battleEngine.getShip(0);
         NeuroShip ship2 = battleEngine.getShip(1);
 
-        detail.writeLine(runID,
+        // Player 1 view
+        detail.writeLine("p1"+runID,
                 player1.getClass(),
                 player2.getClass(),
                 p1Score,
@@ -146,11 +151,38 @@ public class BattleTournament {
                 ship1.getTotalDistance().y,
                 ship2.getTotalDistance().x,
                 ship2.getTotalDistance().y,
+                ship1.totalMag,
+                ship2.totalMag,
+                battleEngine.getStats(0).getWraps(),
+                battleEngine.getStats(1).getWraps(),
                 battleEngine.nMissiles,
                 battleEngine.topSpeed,
                 battleEngine.acceleration,
                 battleEngine.rotationDegreesPerTick
                 );
+
+        // Player 2 view
+        detail.writeLine("p2"+runID,
+                player2.getClass(),
+                player1.getClass(),
+                p2Score,
+                p1Score,
+                battleEngine.getMissilesLeft(1),
+                battleEngine.getMissilesLeft(0),
+                battleEngine.getTicks(),
+                ship2.getTotalDistance().x,
+                ship2.getTotalDistance().y,
+                ship1.getTotalDistance().x,
+                ship1.getTotalDistance().y,
+                ship2.totalMag,
+                ship1.totalMag,
+                battleEngine.getStats(1).getWraps(),
+                battleEngine.getStats(0).getWraps(),
+                battleEngine.nMissiles,
+                battleEngine.topSpeed,
+                battleEngine.acceleration,
+                battleEngine.rotationDegreesPerTick
+        );
     }
 
     private static class BattleStats {
@@ -171,7 +203,7 @@ public class BattleTournament {
         //players
         bt.addController(new MemoController1());
         bt.addController(new MMMCTS());
-        bt.addController(new PiersMCTS());
+        //bt.addController(new PiersMCTS());
         bt.addController(new Naz_AI());
         bt.addController(new DaniController());
 

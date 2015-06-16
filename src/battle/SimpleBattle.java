@@ -147,8 +147,20 @@ public class SimpleBattle {
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
         if (a2.shoot) fireMissile(s2.s, s2.d, 1);
 
+        Vector2d s1sold = new Vector2d(s1.s, false);
         wrap(s1);
+        if (!s1sold.equals(s1.s)) {
+            // we wrapped or something.
+            stats.get(0).wraps++;
+        }
+
+        Vector2d s2sold = new Vector2d(s1.s, false);
         wrap(s2);
+        if (!s2sold.equals(s2.s)) {
+            // we wrapped or something.
+            stats.get(1).wraps++;
+        }
+
 
         // here need to add the game objects ...
         java.util.List<GameObject> killList = new ArrayList<GameObject>();
@@ -337,14 +349,22 @@ public class SimpleBattle {
         return currentTick >= nTicks;
     }
 
+    public PlayerStats getStats(int playerID) {
+        return stats.get(playerID);
+    }
+
     static class PlayerStats {
         int nMissiles;
         int nPoints;
+        int wraps;
 
         public PlayerStats(int nMissiles, int nPoints) {
             this.nMissiles = nMissiles;
             this.nPoints = nPoints;
+            this.wraps = wraps;
         }
+
+        public int getWraps() { return wraps; }
 
         public int getMissilesFired() {
             return nMissiles;
