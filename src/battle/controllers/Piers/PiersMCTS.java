@@ -43,7 +43,7 @@ public class PiersMCTS implements BattleController {
             i++;
         }
 
-        System.out.println("Rollouts achieved: " + i);
+        //System.out.println("Rollouts achieved: " + i);
 
         if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) {
             currentBestAction = new MacroAction(root.getBestAction());

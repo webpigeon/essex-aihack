@@ -49,14 +49,16 @@ public class BetterMCTSNode {
     }
 
     public static void setAllActions() {
-        allActions = new Action[6];
+        if(allActions == null) {
+            allActions = new Action[6];
 //        notShootActions = new Action[6];
-        int i = 0;
-        int j = 0;
-        for (double thrust = 1; thrust <= 1; thrust += 1) {
-            for (double turn = -1; turn <= 1; turn += 1) {
-                allActions[i++] = new Action(thrust, turn, true);
-                allActions[i++] = new Action(thrust, turn, false);
+            int i = 0;
+            int j = 0;
+            for (double thrust = 1; thrust <= 1; thrust += 1) {
+                for (double turn = -1; turn <= 1; turn += 1) {
+                    allActions[i++] = new Action(thrust, turn, true);
+                    allActions[i++] = new Action(thrust, turn, false);
+                }
             }
         }
     }
