@@ -5,6 +5,7 @@ import battle.controllers.EmptyController;
 import battle.controllers.FireForwardController;
 import battle.controllers.Human.WASDController;
 import battle.controllers.Naz.Naz_AI;
+import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
 import battle.controllers.mmmcts.MMMCTS;
 import battle.controllers.webpigeon.StaticEvolver;
@@ -22,8 +23,8 @@ public class BattleTest {
         // Max speed: 5, Min: 1
         SimpleBattle battle = new SimpleBattle(true, 100, 3, 1, 10);
 
-        BattleController player1 = new WASDController();
-        BattleController player2 = new MMMCTS();
+        BattleController player1 = new RotateAndShoot();
+        BattleController player2 = new PiersMCTS();
         battle.playGame(player1, player2);
 
         Vector2d s1Dist = battle.getShip(0).getTotalDistance();

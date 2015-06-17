@@ -172,8 +172,8 @@ public class BattleTournament {
         detail.writeLine("p2"+runID,
                 player2.getClass(),
                 player1.getClass(),
-                p2Score,
-                p1Score,
+                p2Score/10,
+                p1Score/10,
                 battleEngine.getMissilesLeft(1),
                 battleEngine.getMissilesLeft(0),
                 battleEngine.getTicks(),
@@ -213,8 +213,8 @@ public class BattleTournament {
 
                     //players
                     bt.addController(new MemoController1());
-                    //bt.addController(new MMMCTS());
-                    bt.addController(new PiersMCTS());
+                    bt.addController(new MMMCTS());
+                    //bt.addController(new PiersMCTS());
                     bt.addController(new Naz_AI());
                     bt.addController(new DaniController());
 
@@ -237,7 +237,7 @@ public class BattleTournament {
 
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
 
-        ExecutorService service = Executors.newFixedThreadPool(4);
+        ExecutorService service = Executors.newFixedThreadPool(1);
 
         int defaultNumBullets = 100;
         double defaultTopSpeed = 3.0;

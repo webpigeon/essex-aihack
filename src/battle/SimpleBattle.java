@@ -65,7 +65,11 @@ public class SimpleBattle {
 
         if (visible) {
             view = new BattleView(this);
-            new JEasyFrame(view, "battle");
+            if (UserExperiment.frame == null) {
+                UserExperiment.frame = new JEasyFrame(view, "battle");
+            } else {
+                UserExperiment.frame.add(view);
+            }
         }
     }
 
