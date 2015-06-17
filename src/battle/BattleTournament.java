@@ -37,7 +37,7 @@ public class BattleTournament {
     public BattleTournament(boolean visible, int numBullets, double topSpeed, double acceleration, double rotationDegreesPerTick) throws FileNotFoundException
     {
         this.controllers = new ArrayList<>();
-        this.battleEngine = new SimpleBattle(visible, numBullets, topSpeed, acceleration, rotationDegreesPerTick);
+        this.battleEngine = new SimpleBattle(visible, numBullets, topSpeed, acceleration, rotationDegreesPerTick, 'X');
         this.scores = new HashMap<>();
         this.detail = new GenerateCSV(String.format("detail[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));
         this.summary = new GenerateCSV(String.format("summary[%d,%.2f,%.2f,%.2f].csv", numBullets, topSpeed, acceleration, rotationDegreesPerTick ));

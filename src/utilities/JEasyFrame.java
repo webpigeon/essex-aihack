@@ -1,19 +1,26 @@
 package utilities;
 
+import asteroids.Constants;
+import battle.BattleView;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class JEasyFrame extends JFrame {
+
     public Component comp;
     public JEasyFrame(Component comp, String title) {
         super(title);
+        this.setLayout(new BorderLayout());
+        this.setPreferredSize(new Dimension(Constants.width, Constants.height));
         this.comp = comp;
-        getContentPane().add(BorderLayout.CENTER, comp);
+        add(BorderLayout.CENTER, comp);
         pack();
         this.setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         repaint();
     }
+
 }
 

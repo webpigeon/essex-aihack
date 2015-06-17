@@ -21,10 +21,10 @@ public class BattleTest {
     public static void main(String[] args) {
 
         // Max speed: 5, Min: 1
-        SimpleBattle battle = new SimpleBattle(true, 100, 3, 1, 10);
+        SimpleBattle battle = new SimpleBattle(true, 100, 3, 1, 10, 'X');
 
         BattleController player1 = new RotateAndShoot();
-        BattleController player2 = new PiersMCTS();
+        BattleController player2 = new WASDController();
         battle.playGame(player1, player2);
 
         Vector2d s1Dist = battle.getShip(0).getTotalDistance();

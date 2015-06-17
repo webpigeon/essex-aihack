@@ -1,15 +1,20 @@
 package battle;
 
+import asteroids.Game;
 import battle.controllers.Dani.DaniController;
 import battle.controllers.FireForwardController;
+import battle.controllers.Human.MemoHuman;
 import battle.controllers.Human.WASDController;
 import battle.controllers.Memo.MemoController1;
 import battle.controllers.Memo.MemoControllerRandom;
 import battle.controllers.Naz.Naz_AI;
 import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
+import battle.controllers.mmmcts.MMMCTS;
+import sun.java2d.pipe.SpanShapeRenderer;
 import utilities.JEasyFrame;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -20,8 +25,7 @@ import java.util.concurrent.Executors;
  * Created by jwalto on 11/06/2015.
  */
 public class UserExperiment {
-    public static JEasyFrame frame;
-    private final static Integer NUM_ROUNDS = 3;
+    private final static Integer NUM_ROUNDS = 1;
 
     private GenerateCSV summary;
     private GenerateCSV detail;
@@ -63,7 +67,9 @@ public class UserExperiment {
                 "numBullets",
                 "topSpeed",
                 "acceleration",
-                "rotationDegreesPerTick");
+                "rotationDegreesPerTick",
+                "code"
+                );
         //stuff to store
         // totalMagMoved
     }
@@ -79,7 +85,12 @@ public class UserExperiment {
     public void runMatchups() {
         System.out.println(games.size() + " games");
 
-        for (SimpleBattle game : games) {
+        List<SimpleBattle> gameRandomised = new ArrayList<SimpleBattle>(games);
+        Collections.shuffle(gameRandomised);
+
+        System.out.println(gameRandomised);
+        for (SimpleBattle game : gameRandomised) {
+            System.out.println("starting game "+game);
             runRounds(game, NUM_ROUNDS);
         }
 
@@ -184,7 +195,8 @@ public class UserExperiment {
                 game.nMissiles,
                 game.topSpeed,
                 game.acceleration,
-                game.rotationDegreesPerTick
+                game.rotationDegreesPerTick,
+                game.code
         );
     }
 
@@ -201,14 +213,21 @@ public class UserExperiment {
 
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
 
-        BattleController p1 = new WASDController();
-        BattleController p2 = new PiersMCTS();
+        BattleController p1 = new MemoHuman();
+        BattleController p2 = new MMMCTS();
 
         UserExperiment exp = new UserExperiment(p1, p2);
-        exp.addGame(new SimpleBattle(true, 10, 3, 1, 10));
-        exp.addGame(new SimpleBattle(true, 10, 3, 1, 10));
-        exp.addGame(new SimpleBattle(true, 10, 3, 1, 10));
+        exp.addGame(new SimpleBattle(true, 10, 3, 1, 10, 'A'));
+        exp.addGame(new SimpleBattle(true, 100, 3, 1, 10, 'B'));
+        exp.addGame(new SimpleBattle(true, 1000, 3, 1, 10, 'C'));
 
         exp.runMatchups();
+
+        JFrame frame = SimpleBattle.frame;
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(new JLabel("game over."));
+        frame.revalidate();
+        frame.pack();
+        frame.repaint();
     }
 }

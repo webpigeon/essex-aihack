@@ -1,9 +1,11 @@
 package battle;
 
 import asteroids.*;
+import asteroids.Action;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
+import javax.swing.*;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.awt.*;
@@ -36,25 +38,27 @@ public class SimpleBattle {
 
     boolean visible = true;
 
-    ArrayList<BattleController> controllers;
-
     ArrayList<GameObject> objects;
     ArrayList<PlayerStats> stats;
 
-    NeuroShip s1, s2;
-    BattleController p1, p2;
-    BattleView view;
-    int currentTick;
+    private NeuroShip s1, s2;
+    private BattleController p1, p2;
+    private BattleView view;
+    private int currentTick;
+    private boolean gameStarted;
+    private boolean gameContinue;
+    protected static JFrame frame;
+    char code;
 
     public SimpleBattle() {
-        this(true, 100, 3.0, 1.0, 10);
+        this(true, 100, 3.0, 1.0, 10, 'X');
     }
 
     public SimpleBattle(boolean visible) {
-        this(visible, 100, 3.0, 1.0, 10);
+        this(visible, 100, 3.0, 1.0, 10, 'X');
     }
 
-    public SimpleBattle(boolean visible, int nMissiles, double topSpeed, double acceleration, double rotationDegreesPerTick) {
+    public SimpleBattle(boolean visible, int nMissiles, double topSpeed, double acceleration, double rotationDegreesPerTick, char gameCode) {
         this.objects = new ArrayList<>();
         this.stats = new ArrayList<>();
         this.visible = visible;
@@ -63,14 +67,9 @@ public class SimpleBattle {
         this.acceleration = acceleration;
         this.rotationDegreesPerTick = rotationDegreesPerTick;
 
-        if (visible) {
-            view = new BattleView(this);
-            if (UserExperiment.frame == null) {
-                UserExperiment.frame = new JEasyFrame(view, "battle");
-            } else {
-                UserExperiment.frame.add(view);
-            }
-        }
+        gameStarted = true;
+        gameContinue = true;
+        this.code = gameCode;
     }
 
     public int getTicks() {
@@ -82,6 +81,26 @@ public class SimpleBattle {
         this.p2 = p2;
         reset();
 
+        GameStarter starter = new GameStarter(this);
+        if (visible) {
+            view = new BattleView(this);
+            view.addKeyListener(starter);
+            if (frame == null) {
+                frame = new JFrame("Battle asteroids");
+                frame.setLayout(new BorderLayout());
+                frame.setPreferredSize(new Dimension(Constants.width, Constants.height));
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+            }
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(view);
+            frame.revalidate();
+            frame.pack();
+            frame.repaint();
+            view.requestFocus();
+        }
+
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
@@ -89,23 +108,36 @@ public class SimpleBattle {
             view.addKeyListener((KeyListener)p1);
             view.setFocusable(true);
             view.requestFocus();
+            gameStarted = false;
+            gameContinue = false;
         }
 
         if (p2 instanceof KeyListener) {
             view.addKeyListener((KeyListener)p2);
             view.setFocusable(true);
             view.requestFocus();
+            gameStarted = false;
+            gameContinue = false;
         }
 
         while (!isGameOver()) {
             update();
         }
 
-        if (p1 instanceof KeyListener) {
-            view.removeKeyListener((KeyListener)p1);
+        while(!gameContinue) {
+            sleep();
         }
-        if (p2 instanceof KeyListener) {
-            view.removeKeyListener((KeyListener)p2);
+
+        if (visible) {
+            if (p1 instanceof KeyListener) {
+                view.removeKeyListener((KeyListener)p1);
+            }
+
+            if (p2 instanceof KeyListener) {
+                view.removeKeyListener((KeyListener) p2);
+            }
+
+            view.removeKeyListener(starter);
         }
 
         return 0;
@@ -120,6 +152,9 @@ public class SimpleBattle {
 
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
+
+        gameStarted = true;
+        gameContinue = true;
     }
 
     protected NeuroShip buildShip(int x, int y, int playerID) {
@@ -132,6 +167,10 @@ public class SimpleBattle {
 
     public void update() {
         // get the actions from each player
+        view.repaint();
+        if (!gameStarted) {
+            return;
+        }
 
         // apply them to each player's ship, taking actions as necessary
         Action a1 = p1.getAction(this.clone(), 0);
@@ -158,7 +197,7 @@ public class SimpleBattle {
             stats.get(0).wraps++;
         }
 
-        Vector2d s2sold = new Vector2d(s1.s, false);
+        Vector2d s2sold = new Vector2d(s2.s, false);
         wrap(s2);
         if (!s2sold.equals(s2.s)) {
             // we wrapped or something.
@@ -214,6 +253,10 @@ public class SimpleBattle {
         }
 
         return statsClone;
+    }
+
+    public void startGame() {
+        this.gameStarted = true;
     }
 
     protected void checkCollision(GameObject actor) {
@@ -276,16 +319,20 @@ public class SimpleBattle {
     }
 
     public void draw(Graphics2D g) {
+
         // for (Object ob : objects)
         if (s1 == null || s2 == null) {
             return;
         }
 
-        // System.out.println("In draw(): " + n);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(bg);
         g.fillRect(0, 0, size.width, size.height);
+
+        if (!gameStarted) {
+            return;
+        }
 
         for (GameObject go : objects) {
             go.draw(g);
@@ -357,6 +404,18 @@ public class SimpleBattle {
         return stats.get(playerID);
     }
 
+    public boolean hasNotStarted() {
+        return !gameStarted;
+    }
+
+    public void quit() {
+        System.out.println("quit called");
+
+        if (isGameOver()) {
+            gameContinue = true;
+        }
+    }
+
     static class PlayerStats {
         int nMissiles;
         int nPoints;
@@ -381,6 +440,10 @@ public class SimpleBattle {
         public String toString() {
             return nMissiles + " : " + nPoints;
         }
+    }
+
+    public String toString(){
+        return String.format("Battle[%d,%f,%f,%f]", nMissiles, topSpeed, acceleration, rotationDegreesPerTick);
     }
 
 }
